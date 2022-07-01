@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class TransactionMedan extends Model
+class TransactionPematangsiantar extends Model
 {
-    protected $connection = "dbmedan";
+    protected $connection = "dbpematangsiantar";
     protected $collection = "devices";
 }

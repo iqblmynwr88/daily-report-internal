@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SummaryBatam;
+use App\Models\SummaryDeliserdang;
 use Illuminate\Http\Request;
 
-class SummaryBatamController extends Controller
+class SummaryDeliserdangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,10 +16,10 @@ class SummaryBatamController extends Controller
     {
         $bulan = strtolower(date("M"));
         $tahun = date("Y");
-        $isidata = new SummaryBatam;
-        return view ('Summary.batam',[
+        $isidata = new SummaryDeliserdang;
+        return view ('Summary.deliserdang',[
             'main_menu' => 'dailyreport',
-            'slug' => '/summary/batam',
+            'slug' => '/summary/deliserdang',
             'datas' => $isidata->merge($tahun, $bulan),
             'pmt' => $isidata->getPerangkat_(),
             'MDN_IS_ACTIVE' => config('setting.MDN_IS_ACTIVE'),
@@ -36,27 +36,27 @@ class SummaryBatamController extends Controller
         ]);
     }
 
-    // SearchSummaryBatam
-    public function SearchSummaryBatam($slug)
+    // SearchSummaryMedan
+    public function SearchSummaryDeliserdang($slug)
     {
         $arr = explode("|",$slug);
 
         $year = $arr[0];
         $month = strtolower($arr[1]);
-        $isidata = new SummaryBatam;
+        $isidata = new SummaryDeliserdang;
 
         return ($isidata->merge($year, $month));
     }
 
     // Search By PMT
-    public function SearchByPmt($slug)
+    public function SearchByPmtDeliserdang($slug)
     {
         $arr = explode("|", $slug);
         $pmt = $arr[0];
         $year = $arr[1];
         $bulan = strtolower($arr[2]);
 
-        $isidata = new SummaryBatam;
+        $isidata = new SummaryDeliserdang;
         if ($pmt <> "all") {
             return ($isidata->GetDataByPmt($pmt, $year, $bulan));
         } else {
@@ -87,7 +87,7 @@ class SummaryBatamController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\SummaryBatam  $SummaryBatam
+     * @param  \App\Models\SummaryDeliserang  $summaryMedan
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -104,7 +104,7 @@ class SummaryBatamController extends Controller
         $address = $arr[4];
         $status = $arr[5];
         $information = $arr[6];
-        $TrxMedan = new SummaryBatam;
+        $TrxMedan = new SummaryDeliserdang;
         $res = [
             'id' => $id,
             'nop' => $nop,
@@ -122,10 +122,10 @@ class SummaryBatamController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\SummaryBatam  $SummaryBatam
+     * @param  \App\Models\SummaryMedan  $summaryMedan
      * @return \Illuminate\Http\Response
      */
-    public function edit(SummaryBatam $SummaryBatam)
+    public function edit(SummaryDeliserdang $summaryMedan)
     {
         //
     }
@@ -134,10 +134,10 @@ class SummaryBatamController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SummaryBatam  $SummaryBatam
+     * @param  \App\Models\SummaryMedan  $summaryMedan
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SummaryBatam $SummaryBatam)
+    public function update(Request $request, SummaryDeliserdang $summaryMedan)
     {
         //
     }
@@ -145,10 +145,10 @@ class SummaryBatamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\SummaryBatam  $SummaryBatam
+     * @param  \App\Models\SummaryMedan  $summaryMedan
      * @return \Illuminate\Http\Response
      */
-    public function destroy(SummaryBatam $SummaryBatam)
+    public function destroy(SummaryDeliserdang $summaryMedan)
     {
         //
     }

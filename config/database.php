@@ -125,11 +125,11 @@ return [
         ],
         'dbdeliserdang' => [
             'driver' => 'mongodb',
-            'host' => env('MONGO_DB_HOST'),
-            'port'     => env('MONGO_DB_PORT'),
-            'database' => env('MONGO_DB_DATABASE'),
-            'username' => env('MONGO_DB_USERNAME'),
-            'password' => env('MONGO_DB_PASSWORD'),
+            'host' => env('MONGO_DLS_DB_HOST'),
+            'port'     => env('MONGO_DLS_DB_PORT'),
+            'database' => env('MONGO_DLS_DB_DATABASE'),
+            'username' => env('MONGO_DLS_DB_USERNAME'),
+            'password' => env('MONGO_DLS_DB_PASSWORD'),
         ],
         'dbkaro' => [
             'driver' => 'mongodb',

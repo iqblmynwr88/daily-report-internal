@@ -223,7 +223,7 @@
                 console.log(bulan);
                 param = id+"|"+nop+"|"+name+"|"+tax+"|"+address+"|"+status+"|"+information
                 $.ajax({
-                    url : "/SummaryMedan/"+param,
+                    url : "/SummaryPematangsiantar/"+param,
                     success : function(result) {
                         // console.log(result.datas[0][bulan]['values'][index]);
                         $("#detail-name").html("<small><b>"+result.name+" | "+result.id+ " | "+result.nop+"</b></small>");
@@ -262,7 +262,7 @@
                 $(".text-loader").show();
                 if (perangkat !== "default" || perangkat !== null || perangkat != null) {
                     $.ajax({
-                        url : "/SearchByPmtMedan/"+param,
+                        url : "/SearchByPmtPematangsiantar/"+param,
                         success : function (result) {
                             console.log(result);
                             $(".spinner-border").hide();
@@ -318,7 +318,7 @@
                 $("#year_").val("");
                 $("#month_").val("");
                 $.ajax({
-                    url : "/SearchSummaryMedan/"+param,
+                    url : "/SearchSummaryPematangsiantar/"+param,
                     success : function (result) {
                         $("#perangkat_").val("default").trigger("change");
                         $("#perangkat_").prop("disabled",true);
@@ -394,7 +394,7 @@
                     $(".spinner-border").show();
                     $(".text-loader").show();
                     $.ajax({
-                        url : "/SearchSummaryMedan/"+param,
+                        url : "/SearchSummaryPematangsiantar/"+param,
                         success : function (result) {
                             $("#perangkat_").prop("disabled",false);
                             $(".spinner-border").hide();
@@ -450,7 +450,7 @@
                 $(".text-loader").show();
                 var test = "";
                 $.ajax({
-                    url : "/SearchSummaryMedan/"+param,
+                    url : "/SearchSummaryPematangsiantar/"+param,
                     success : function (result) {
                         $(".spinner-border").hide();
                         $(".text-loader").hide();

@@ -32,15 +32,15 @@
             <h6 class="collapse-header">Wilayah</h6>
             <a class="collapse-item {{ $slug == '/summary/medan' ? 'active' : '' }} {{ $MDN_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/medan">Medan</a>
             <a class="collapse-item {{ $slug == '/summary/batam' ? 'active' : '' }} {{ $BTM_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/batam">Batam</a>
-            <a class="collapse-item {{ $slug == '/summary/bengkulu' ? 'active' : '' }} {{ $BGL_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Bengkulu</a>
-            <a class="collapse-item {{ $slug == '/summary/binjai' ? 'active' : '' }} {{ $BJI_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Binjai</a>
-            <a class="collapse-item {{ $slug == '/summary/deliserdang' ? 'active' : '' }} {{ $DLS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Deliserdang</a>
-            <a class="collapse-item {{ $slug == '/summary/karo' ? 'active' : '' }} {{ $KRO_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Karo</a>
-            <a class="collapse-item {{ $slug == '/summary/pekanbaru' ? 'active' : '' }} {{ $PKB_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Pekanbaru</a>
-            <a class="collapse-item {{ $slug == '/summary/pematangsiantar' ? 'active' : '' }} {{ $PMT_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Pematangsiantar</a>
-            <a class="collapse-item {{ $slug == '/summary/samosir' ? 'active' : '' }} {{ $SMS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Samosir</a>
-            <a class="collapse-item {{ $slug == '/summary/simalungun' ? 'active' : '' }} {{ $SML_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Simalungun</a>
-            <a class="collapse-item {{ $slug == '/summary/tanjungpinang' ? 'active' : '' }} {{ $TJP_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="cards.html">Tanjungpinang</a>
+            <a class="collapse-item {{ $slug == '/summary/bengkulu' ? 'active' : '' }} {{ $BGL_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/bengkulu">Bengkulu</a>
+            <a class="collapse-item {{ $slug == '/summary/binjai' ? 'active' : '' }} {{ $BJI_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/binjai">Binjai</a>
+            <a class="collapse-item {{ $slug == '/summary/deliserdang' ? 'active' : '' }} {{ $DLS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/deliserdang">Deliserdang</a>
+            <a class="collapse-item {{ $slug == '/summary/karo' ? 'active' : '' }} {{ $KRO_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/karo">Karo</a>
+            <a class="collapse-item {{ $slug == '/summary/pekanbaru' ? 'active' : '' }} {{ $PKB_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/pekanbaru">Pekanbaru</a>
+            <a class="collapse-item {{ $slug == '/summary/pematangsiantar' ? 'active' : '' }} {{ $PMT_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/pematangsiantar">Pematangsiantar</a>
+            <a class="collapse-item {{ $slug == '/summary/samosir' ? 'active' : '' }} {{ $SMS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/samosir">Samosir</a>
+            <a class="collapse-item {{ $slug == '/summary/simalungun' ? 'active' : '' }} {{ $SML_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/simalungun">Simalungun</a>
+            <a class="collapse-item {{ $slug == '/summary/tanjungpinang' ? 'active' : '' }} {{ $TJP_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/tanjungpinang">Tanjungpinang</a>
         </div>
     </div>
 </li>

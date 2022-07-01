@@ -18,11 +18,11 @@ class SummaryMedanController extends Controller
         $bulan = strtolower(date("M"));
         $tahun = date("Y");
         $isidata = new SummaryMedan;
-        // dd($isidata->merge($tahun,$bulan));
         return view ('Summary.medan',[
             'main_menu' => 'dailyreport',
             'slug' => '/summary/medan',
             'datas' => $isidata->merge($tahun, $bulan),
+            'pmt' => $isidata->getPerangkat_(),
             'MDN_IS_ACTIVE' => config('setting.MDN_IS_ACTIVE'),
             'BTM_IS_ACTIVE' => config('setting.BTM_IS_ACTIVE'),
             'BGL_IS_ACTIVE' => config('setting.BGL_IS_ACTIVE'),
@@ -49,6 +49,21 @@ class SummaryMedanController extends Controller
         return ($isidata->merge($year, $month));
     }
 
+    // Search By PMT
+    public function SearchByPmt($slug)
+    {
+        $arr = explode("|", $slug);
+        $pmt = $arr[0];
+        $year = $arr[1];
+        $bulan = strtolower($arr[2]);
+
+        $isidata = new SummaryMedan;
+        if ($pmt <> "all") {
+            return ($isidata->GetDataByPmt($pmt, $year, $bulan));
+        } else {
+            return ($isidata->merge($year, $bulan));
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -90,9 +105,7 @@ class SummaryMedanController extends Controller
         $address = $arr[4];
         $status = $arr[5];
         $information = $arr[6];
-        
         $TrxMedan = new SummaryMedan;
-        
         $res = [
             'id' => $id,
             'nop' => $nop,
