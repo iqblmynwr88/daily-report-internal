@@ -18,7 +18,7 @@ class SummaryMedanController extends Controller
         $bulan = strtolower(date("M"));
         $tahun = date("Y");
         $isidata = new SummaryMedan;
-        return view ('Summary.medan',[
+        return view ('summary.medan',[
             'main_menu' => 'dailyreport',
             'slug' => '/summary/medan',
             'datas' => $isidata->merge($tahun, $bulan),

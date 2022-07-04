@@ -17,7 +17,7 @@ class SummaryBatamController extends Controller
         $bulan = strtolower(date("M"));
         $tahun = date("Y");
         $isidata = new SummaryBatam;
-        return view ('Summary.batam',[
+        return view ('summary.batam',[
             'main_menu' => 'dailyreport',
             'slug' => '/summary/batam',
             'datas' => $isidata->merge($tahun, $bulan),

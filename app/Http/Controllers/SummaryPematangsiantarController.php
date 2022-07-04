@@ -17,7 +17,7 @@ class SummaryPematangsiantarController extends Controller
         $bulan = strtolower(date("M"));
         $tahun = date("Y");
         $isidata = new SummaryPematangsiantar;
-        return view ('Summary.pematangsiantar',[
+        return view ('summary.pematangsiantar',[
             'main_menu' => 'dailyreport',
             'slug' => '/summary/pematangsiantar',
             'datas' => $isidata->merge($tahun, $bulan),

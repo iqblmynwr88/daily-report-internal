@@ -17,7 +17,7 @@ class SummaryDeliserdangController extends Controller
         $bulan = strtolower(date("M"));
         $tahun = date("Y");
         $isidata = new SummaryDeliserdang;
-        return view ('Summary.deliserdang',[
+        return view ('summary.deliserdang',[
             'main_menu' => 'dailyreport',
             'slug' => '/summary/deliserdang',
             'datas' => $isidata->merge($tahun, $bulan),
