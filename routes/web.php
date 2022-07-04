@@ -24,7 +24,10 @@ use Illuminate\Support\Facades\Route;
 //     // return view('welcome');
 //     return "helooo";
 // });
-
+// phpinfo show
+// =========================================================================================================================
+Route::get('/phpinfo',function () {return phpinfo();});
+// =========================================================================================================================
 Route::get('/', [SummaryReportController::class, 'index']);
 Route::get('/medan',[SummaryMedanController::class, 'index']);
 Route::get('/batam',[SummaryBatamController::class, 'index']);
