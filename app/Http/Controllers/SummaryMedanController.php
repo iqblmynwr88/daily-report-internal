@@ -64,6 +64,17 @@ class SummaryMedanController extends Controller
             return ($isidata->merge($year, $bulan));
         }
     }
+
+    public function SimpanKeteranganMedan($slug)
+    {
+        $arr = explode("|",$slug);
+        $id = $arr[0];
+        $keterangan = $arr[1];
+        $tahun = $arr[2];
+        $bulan = $arr[3];
+        $isidata = new SummaryMedan;
+        return ($isidata->SimpanKeterangan($id, $keterangan, $tahun, $bulan));
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -80,9 +91,9 @@ class SummaryMedanController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($slug)
     {
-        //
+        
     }
 
     /**
@@ -97,23 +108,10 @@ class SummaryMedanController extends Controller
 
         // Pembagian isi parameter
 
-        $year = date("Y");
         $id = $arr[0];
-        $nop = $arr[1];
-        $name = $arr[2];
-        $tax = $arr[3];
-        $address = $arr[4];
-        $status = $arr[5];
-        $information = $arr[6];
+        $year = $arr[1];
         $TrxMedan = new SummaryMedan;
         $res = [
-            'id' => $id,
-            'nop' => $nop,
-            'name' => $name,
-            'tax' => $tax,
-            'address' => $address,
-            'status' => $status,
-            'information' => $information,
             'datas' => $TrxMedan->trx($id, $year)
         ];
 

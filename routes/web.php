@@ -37,6 +37,7 @@ Route::get('/pematangsiantar',[SummaryPematangsiantarController::class, 'index']
 Route::resource('/SummaryMedan',SummaryMedanController::class);
 Route::get('/SearchSummaryMedan/{slug}',[SummaryMedanController::class, 'SearchSummaryMedan']);
 Route::get('/SearchByPmtMedan/{slug}',[SummaryMedanController::class, 'SearchByPmt']);
+Route::get('/AddKeteranganMedan/{slug}',[SummaryMedanController::class, 'SimpanKeteranganMedan']);
 
 Route::resource('/SummaryBatam',SummaryBatamController::class);
 Route::get('/SearchSummaryBatam/{slug}',[SummaryBatamController::class, 'SearchSummaryBatam']);

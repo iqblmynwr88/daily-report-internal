@@ -73,7 +73,7 @@
                             <h6 class="m-0 font-weight-bold text-primary">Detail Data</h6>
                         </div>
                         <div class="card-body">
-                            <div class="page-loader text-center">
+                            <div class="page-loader text-center" id="spinner-main">
                                 <div class="spinner-border text-primary" role="status">
                                     <span class="visually-hidden"></span>
                                 </div>
@@ -120,7 +120,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Detail Summary</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -145,21 +145,63 @@
                             <div class="table-responsive">
                                 <table class="table table-bordered table-primary table-striped" id="dataTableSummary" width="100%" cellspacing="0">
                                     <thead>
-                                        <th><small>Tanggal</small></th>
-                                        <th><small>Total</small></th>
-                                        <th><small>Amount</small></th>
-                                        <th><small>Tax</small></th>
+                                        <th style='width: 5%;'><small>Tanggal</small></th>
+                                        <th style='width: 10%;'><small>Total Amount</small></th>
+                                        <th style='width: 10%;'><small>Tax</small></th>
+                                        <th style='width: 50%;'><small>Keterangan</small></th>
+                                        <th style='width: 1%;'><small>...</small></th>
                                     </thead>
                                     <tbody>
-
                                     </tbody>
                                 </table>
+                            </div>
+                            <input type="hidden" name="" id="id-wp">
+                            <input type="hidden" name="" id="nama-wp">
+                            <input type="hidden" name="" id="tahun-trx">
+                            <input type="hidden" name="" id="bulan-trx">
+                            <input type="hidden" name="" id="keterangan">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="AddKeterangan" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Form Keterangan</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12">
+                            <div id="pesan-sistem">
+                                
+                            </div>
+                            <div class="mb-3">
+                                <label for="formGroupExampleInput" class="form-label">Wajib Pajak</label>
+                                <input type="text" class="form-control" id="nama-wajib-pajak" readonly placeholder="Example input placeholder">
+                                <input type="hidden" name="" id="id-wajib-pajak">
+                                <input type="hidden" name="" id="tahun-wajib-pajak">
+                                <input type="hidden" name="" id="bulan-wajib-pajak">
+                            </div>
+                            <div class="mb-3">
+                                <label for="formGroupExampleInput2" class="form-label">Keterangan</label>
+                                <textarea class="form-control" aria-label="With textarea" id="keterangan-wajib-pajak" required></textarea>
+                                <div class="invalid-feedback" id="error-keterangan-wajib-pajak" style="display: none">
+                                    <i>Mohon diisi</i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" type="button" id="btn-save-add-keterangan">Save</button>
+                    <button class="btn btn-secondary" type="button" id="btn-cancel-add-keterangan">Cancel</button>
                 </div>
             </div>
         </div>
@@ -176,8 +218,8 @@
 
     <script>
         $(document).ready(function() {
-            $(".spinner-border").hide();
-            $(".text-loader").hide();
+            $("#spinner-main").hide();
+            
             $("#ResetDataMedan").hide();
             $("#perangkat_").prop("disabled",true);
             getStarted();
@@ -210,6 +252,7 @@
                 });
             $(document.body).delegate("#col-det","click",function(e){
                 e.preventDefault();
+                year = $("#year__").val();
                 bulan = $(this).attr("data-bulan").toLowerCase();
                 index = $(this).attr("data-index");
                 day = $(this).attr("data-day");
@@ -219,24 +262,101 @@
                 tax = $(this).attr("data-tax");
                 address = $(this).attr("data-address");
                 status = $(this).attr("data-status");
+                $("#id-wp").val(id);
+                $("#nama-wp").val(name);
+                $("#tahun-trx").val($(this).attr("data-tahun"));
+                $("#bulan-trx").val(bulan);
                 information = $(this).attr("data-information");
-                console.log(bulan);
-                param = id+"|"+nop+"|"+name+"|"+tax+"|"+address+"|"+status+"|"+information
+                $("#keterangan-wajib-pajak").val("")
+                param = id+"|"+year;
                 $.ajax({
                     url : "/SummaryMedan/"+param,
                     success : function(result) {
-                        // console.log(result.datas[0][bulan]['values'][index]);
-                        $("#detail-name").html("<small><b>"+result.name+" | "+result.id+ " | "+result.nop+"</b></small>");
-                        $("#detail-address").html("<small>"+result.address+"</small>");
-                        $("#detail-category").html("<small>"+result.tax+"</small>");
+                        $("#DetailSummary").modal("show");
+                        $("#detail-name").html("<small><b>"+result.datas[0].merchant.name+" | "+result.datas[0].merchant._id.$oid+ " | "+result.datas[0].merchant.nop+"</b></small>");
+                        $("#detail-address").html("<small>"+result.datas[0].merchant.address+"</small>");
+                        $("#detail-category").html("<small>"+result.datas[0].merchant.tax+"</small>");
+                        result.datas[0][bulan].keterangan !== undefined ? $("#keterangan-wajib-pajak").val(result.datas[0][bulan].keterangan) : "";
                         table.clear().draw();
                         result.datas.forEach(element => {
-                            console.log(element);
                             table.row.add([
                                 "<small>"+element[bulan]['values'][index]['day']+"</small>",
                                 "<small>Rp. " + number_format(result.datas[0][bulan]['values'][index]['amt'])+"</small>",
+                                "<small>Rp. " + number_format(result.datas[0][bulan]['values'][index]['tax'])+"</small>",
+                                element[bulan].keterangan != undefined ? "<small>" + result.datas[0][bulan].keterangan +"</small>" : "<small>-</small>",
+                                element[bulan].keterangan != undefined ? "<button class='btn btn-sm btn-success' id='btn-tambah-keterangan' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Edit keterangan? click disini.'><i class='fas fa-edit fa-sm'></i></button>" : "<button class='btn btn-sm btn-success' id='btn-tambah-keterangan' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Tambah keterangan? click disini.'><i class='fas fa-plus fa-sm'></i></button>",
+                            ])
+                            table.columns.adjust().draw();
+                        });
+                    }
+                })
+            });
+            $(document.body).delegate("#btn-tambah-keterangan","click",function(e){
+                e.preventDefault();
+                var id = $("#id-wp").val();
+                var name = $("#nama-wp").val();
+                var tahun = $("#tahun-trx").val();
+                var bulan = $("#bulan-trx").val();
+                var keterangan = $("#keterangan-wajib-pajak").val();
+                $("#DetailSummary").modal("hide");
+                $("#AddKeterangan").modal("show");
+                $("#nama-wajib-pajak").val(name);
+                $("#id-wajib-pajak").val(id);
+                $("#tahun-wajib-pajak").val(tahun);
+                $("#bulan-wajib-pajak").val(bulan);
+                $("#btn-cancel-add-keterangan").attr("data-id",id);
+                $("#btn-cancel-add-keterangan").attr("data-tahun",tahun);
+                $("#btn-cancel-add-keterangan").attr("data-bulan",bulan);
+            });
+            $(document.body).delegate("#btn-save-add-keterangan","click",function(e){
+                e.preventDefault();
+                if ($("#keterangan-wajib-pajak").val() === "") {
+                    $("#pesan-sistem").empty();
+                    $("#pesan-sistem").append("<div class='alert alert-danger' role='alert'>Keterangan mohon diisi, silahkan ulang kembali</div>");
+                } else {
+                    var id = $("#id-wajib-pajak").val();
+                    var name = $("#nama-wajib-pajak").val();
+                    var tahun = $("#tahun-wajib-pajak").val();
+                    var bulan = $("#bulan-wajib-pajak").val();
+                    var keterangan = $("#keterangan-wajib-pajak").val();
+                    $("#pesan-sistem").empty();
+                    $("#pesan-sistem").append("<div class='alert alert-secondary' role='alert'><div class='page-loader text-center'><div class='spinner-border text-secondary' id='spinner-form-keterangan' role='status'><span class='visually-hidden'></span></div><p class='text-secondary text-loader'>Please wait...</p></div></div>");
+                    var param = id +"|"+keterangan+"|"+tahun+"|"+bulan;
+                    $.ajax({
+                        url : "/AddKeteranganMedan/"+param,
+                        success : function (result) {
+                            $("#pesan-sistem").empty();
+                            $("#pesan-sistem").append("<div class='alert alert-success' role='alert'>Keterangan telah disimpan, Terima kasih!</div>");
+                            $("#keterangan-wajib-pajak").val(result[0].summaries.keterangan);
+                        }
+                    });
+                }
+            });
+            $(document.body).delegate("#btn-cancel-add-keterangan","click",function(e){
+                e.preventDefault();
+                $("#pesan-sistem").empty();
+                $("#keterangan-wajib-pajak").val("");
+                id = $(this).attr("data-id");
+                tahun = $(this).attr("data-tahun");
+                bulan = $(this).attr("data-bulan");
+                param = id+"|"+tahun;
+                $.ajax({
+                    url : "/SummaryMedan/"+param,
+                    success : function(result) {
+                        $("#AddKeterangan").modal("hide");
+                        $("#DetailSummary").modal("show");
+                        $("#detail-name").html("<small><b>"+result.datas[0].merchant.name+" | "+result.datas[0].merchant._id.$oid+ " | "+result.datas[0].merchant.nop+"</b></small>");
+                        $("#detail-address").html("<small>"+result.datas[0].merchant.address+"</small>");
+                        $("#detail-category").html("<small>"+result.datas[0].merchant.tax+"</small>");
+                        result.datas[0][bulan].keterangan != undefined ? $("#keterangan-wajib-pajak").val(result.datas[0][bulan].keterangan) : "";
+                        table.clear().draw();
+                        result.datas.forEach(element => {
+                            table.row.add([
+                                "<small>"+element[bulan]['values'][index]['day']+"</small>",
                                 "<small>Rp. " + number_format(result.datas[0][bulan]['values'][index]['amt'])+"</small>",
                                 "<small>Rp. " + number_format(result.datas[0][bulan]['values'][index]['tax'])+"</small>",
+                                element[bulan].keterangan != undefined ? "<small>" + result.datas[0][bulan].keterangan +"</small>" : "<small>-</small>",
+                                element[bulan].keterangan != undefined ? "<button class='btn btn-sm btn-success' id='btn-tambah-keterangan' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Edit keterangan? click disini.'><i class='fas fa-edit fa-sm'></i></button>" : "<button class='btn btn-sm btn-success' id='btn-tambah-keterangan' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Tambah keterangan? click disini.'><i class='fas fa-plus fa-sm'></i></button>",
                             ])
                             table.columns.adjust().draw();
                         });
@@ -258,25 +378,24 @@
                 var isiSubBody = "";
                 var Row = 0;
                 $(".table-responsive").hide();
-                $(".spinner-border").show();
-                $(".text-loader").show();
+                $("#spinner-main").show();
+                
                 if (perangkat !== "default" || perangkat !== null || perangkat != null) {
                     $.ajax({
                         url : "/SearchByPmtMedan/"+param,
                         success : function (result) {
-                            console.log(result);
-                            $(".spinner-border").hide();
-                            $(".text-loader").hide();
+                            $("#spinner-main").hide();
+                            
                             $(".table-responsive").show();
                             $.each(result, function(iX, valX){
                                 noTmp = no++;
                                 $.each(valX.summaries.values, function(i, valZ){
                                     if (valZ.amt === 0 || valZ.amt == 0) {
-                                        isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month.toLowerCase()+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39'")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month.toLowerCase()+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                     } else if (valZ.amt >= 200000) {
-                                        isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month.toLowerCase()+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month.toLowerCase()+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                     } else {
-                                        isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month.toLowerCase()+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month.toLowerCase()+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                     }
                                 });
                                 isiBody += "<tr><td><small>"+noTmp+"</small></td><td><small>"+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
@@ -287,7 +406,7 @@
                             });
                             Row = result[0].summaries.values.length + 3;
                             isiHead = "<tr><th colspan='"+Row+"' style='text-align:center'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
-                            isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead class='table-primary' id='TableDataHeader'>"+isiHead+"</thead><tbody class='table-info'>"+isiBody+"</tbody></table>";
+                            isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
                             $("#TableDataDiv").empty();
                             $("#TableDataDiv").append(isiTable);
                             $("#TableData").DataTable({
@@ -313,8 +432,8 @@
                 $("#ResetDataMedan").html("Mohon tunggu...");
                 $("#ResetDataMedan").prop("disabled",true);
                 $(".table-responsive").hide();
-                $(".spinner-border").show();
-                $(".text-loader").show();
+                $("#spinner-main").show();
+                
                 $("#year_").val("");
                 $("#month_").val("");
                 $.ajax({
@@ -322,8 +441,8 @@
                     success : function (result) {
                         $("#perangkat_").val("default").trigger("change");
                         $("#perangkat_").prop("disabled",true);
-                        $(".spinner-border").hide();
-                        $(".text-loader").hide();
+                        $("#spinner-main").hide();
+                        
                         $(".table-responsive").show();
                         $("#divSearch").empty();
                         $("#divSearch").append("<center><button class='btn btn-sm btn-primary' style='width: 100%;height: 38px' id='SearchDataMedan'><i class='fas fa-search fa-sm'></i> Search Data</button></center>");
@@ -333,11 +452,11 @@
                             noTmp = no++;
                             $.each(valX.summaries.values, function(i, valZ){
                                 if (valZ.amt === 0 || valZ.amt == 0) {
-                                    isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39'")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                    isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                 } else if (valZ.amt >= 200000) {
-                                    isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                    isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                 } else {
-                                    isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                    isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                 }
                             });
                             isiBody += "<tr><td><small>"+noTmp+"</small></td><td><small>"+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
@@ -348,7 +467,7 @@
                         });
                         Row = result[0].summaries.values.length + 3;
                         isiHead = "<tr><th colspan='"+Row+"' style='text-align:center'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
-                        isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead class='table-primary' id='TableDataHeader'>"+isiHead+"</thead><tbody class='table-info'>"+isiBody+"</tbody></table>";
+                        isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
                         $("#TableDataDiv").empty();
                         $("#TableDataDiv").append(isiTable);
                         $("#TableData").DataTable({
@@ -391,14 +510,14 @@
                     $("#SearchDataMedan").html("Mohon tunggu...");
                     $("#SearchDataMedan").prop("disabled",true);
                     $(".table-responsive").hide();
-                    $(".spinner-border").show();
-                    $(".text-loader").show();
+                    $("#spinner-main").show();
+                    
                     $.ajax({
                         url : "/SearchSummaryMedan/"+param,
                         success : function (result) {
                             $("#perangkat_").prop("disabled",false);
-                            $(".spinner-border").hide();
-                            $(".text-loader").hide();
+                            $("#spinner-main").hide();
+                            
                             $(".table-responsive").show();
                             $("#divSearch").empty();
                             $("#divSearch").append("<center><button class='btn btn-sm btn-danger' style='width: 100%;height: 38px' id='ResetDataMedan'><i class='fas fa-trash fa-sm'></i> Reset Data</button></center>");
@@ -408,11 +527,11 @@
                                 noTmp = no++;
                                 $.each(valX.summaries.values, function(i, valZ){
                                     if (valZ.amt === 0 || valZ.amt == 0) {
-                                        isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39'")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                     } else if (valZ.amt >= 200000) {
-                                        isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                     } else {
-                                        isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                     }
                                 });
                                 isiBody += "<tr><td><small>"+noTmp+"</small></td><td><small>"+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
@@ -423,7 +542,7 @@
                             });
                             Row = result[0].summaries.values.length + 3;
                             isiHead = "<tr><th colspan='"+Row+"' style='text-align:center'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
-                            isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead class='table-primary' id='TableDataHeader'>"+isiHead+"</thead><tbody class='table-info'>"+isiBody+"</tbody></table>";
+                            isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
                             $("#TableDataDiv").empty();
                             $("#TableDataDiv").append(isiTable);
                             $("#TableData").DataTable({
@@ -446,24 +565,24 @@
                 var isiSubBody = "";
                 var Row = 0;
                 $(".table-responsive").hide();
-                $(".spinner-border").show();
-                $(".text-loader").show();
+                $("#spinner-main").show();
+                
                 var test = "";
                 $.ajax({
                     url : "/SearchSummaryMedan/"+param,
                     success : function (result) {
-                        $(".spinner-border").hide();
-                        $(".text-loader").hide();
+                        $("#spinner-main").hide();
+                        
                         $(".table-responsive").show();
                         $.each(result, function(iX, valX){
                             noTmp = no++;
                             $.each(valX.summaries.values, function(i, valZ){
                                 if (valZ.amt === 0 || valZ.amt == 0) {
-                                    isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39'")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                    isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:red;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                 } else if (valZ.amt >= 200000) {
-                                    isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                    isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:green;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                 } else {
-                                    isiSubBody += "<td id='col-det' data-toggle='modal' data-bulan='"+month+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
+                                    isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='background-color:orange;color:white;!important;border: 0.001em solid'><small>"+valZ.day+"</small></td>";
                                 }
                             });
                             isiBody += "<tr><td><small>"+noTmp+"</small></td><td><small>"+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
@@ -474,7 +593,7 @@
                         });
                         Row = result[0].summaries.values.length + 3;
                         isiHead = "<tr><th colspan='"+Row+"' style='text-align:center'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
-                        isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead class='table-primary' id='TableDataHeader'>"+isiHead+"</thead><tbody class='table-info'>"+isiBody+"</tbody></table>";
+                        isiTable = "<table class='table table-bordered' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
                         $("#TableDataDiv").empty();
                         $("#TableDataDiv").append(isiTable);
                         $("#TableData").DataTable({
