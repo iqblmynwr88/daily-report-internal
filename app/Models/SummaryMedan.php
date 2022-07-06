@@ -13,7 +13,6 @@ class SummaryMedan extends Model
     public function merge($tahun, $bulan)
     {
         $data_ = SummaryMedan::where('year',$tahun,true)->get();
-        // $isi = SummaryMedan::where('year',$tahun,true)->where('merchant._id','5fe2b426ad02a352561e3c39',true)->get();
         foreach ($data_ as $data) {
             $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
             foreach ($data2 as $sub2) {

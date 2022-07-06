@@ -5,8 +5,7 @@ use App\Http\Controllers\SummaryDeliserdangController;
 use App\Http\Controllers\SummaryMedanController;
 use App\Http\Controllers\SummaryPematangsiantarController;
 use App\Http\Controllers\SummaryReportController;
-use App\Models\SummaryDeliserdang;
-use App\Models\SummaryPematangsiantar;
+use App\Http\Controllers\SummaryWilayah;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,33 +19,35 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     // return view('welcome');
-//     return "helooo";
-// });
-// phpinfo show
 // =========================================================================================================================
 Route::get('/phpinfo',function () {return phpinfo();});
 // =========================================================================================================================
 Route::get('/', [SummaryReportController::class, 'index']);
-Route::get('/medan',[SummaryMedanController::class, 'index']);
-Route::get('/batam',[SummaryBatamController::class, 'index']);
-Route::get('/deliserdang',[SummaryDeliserdangController::class, 'index']);
-Route::get('/pematangsiantar',[SummaryPematangsiantarController::class, 'index']);
+Route::get('/{slug}',[SummaryWilayah::class, 'index']);
+Route::get('/SummaryWilayah/{slug}',[SummaryWilayah::class, 'SummaryWilayah']);
+Route::resource('/DetailPertangal',SummaryWilayah::class);
+Route::get('/AddKeterangan/{slug}',[SummaryWilayah::class, 'SimpanKeterangan']);
+Route::get('/SearchByPmt/{slug}',[SummaryWilayah::class, 'SearchByPmt']);
+// Route::get('/SearchSummary/{slug}',[SummaryWilayah::class, 'SearchSummary']);
 
-Route::resource('/SummaryMedan',SummaryMedanController::class);
-Route::get('/SearchSummaryMedan/{slug}',[SummaryMedanController::class, 'SearchSummaryMedan']);
-Route::get('/SearchByPmtMedan/{slug}',[SummaryMedanController::class, 'SearchByPmt']);
-Route::get('/AddKeteranganMedan/{slug}',[SummaryMedanController::class, 'SimpanKeteranganMedan']);
+// Settingan OLD version
+// Route::get('/batam',[SummaryBatamController::class, 'index']);
+// Route::get('/deliserdang',[SummaryDeliserdangController::class, 'index']);
+// Route::get('/pematangsiantar',[SummaryPematangsiantarController::class, 'index']);
 
-Route::resource('/SummaryBatam',SummaryBatamController::class);
-Route::get('/SearchSummaryBatam/{slug}',[SummaryBatamController::class, 'SearchSummaryBatam']);
-Route::get('/SearchByPmtBatam/{slug}',[SummaryBatamController::class, 'SearchByPmt']);
+// Route::resource('/SummaryMedan',SummaryMedanController::class);
+// Route::get('/SearchSummaryMedan/{slug}',[SummaryMedanController::class, 'SearchSummaryMedan']);
+// Route::get('/SearchByPmtMedan/{slug}',[SummaryMedanController::class, 'SearchByPmt']);
+// Route::get('/AddKeteranganMedan/{slug}',[SummaryMedanController::class, 'SimpanKeteranganMedan']);
 
-Route::resource('/SummaryDeliserdang',SummaryDeliserdangController::class);
-Route::get('/SearchSummaryDeliserdang/{slug}',[SummaryDeliserdangController::class, 'SearchSummaryDeliserdang']);
-Route::get('/SearchByPmtDeliserdang/{slug}',[SummaryDeliserdangController::class, 'SearchByPmtDeliserdang']);
+// Route::resource('/SummaryBatam',SummaryBatamController::class);
+// Route::get('/SearchSummaryBatam/{slug}',[SummaryBatamController::class, 'SearchSummaryBatam']);
+// Route::get('/SearchByPmtBatam/{slug}',[SummaryBatamController::class, 'SearchByPmt']);
 
-Route::resource('/SummaryPematangsiantar',SummaryPematangsiantarController::class);
-Route::get('/SearchSummaryPematangsiantar/{slug}',[SummaryPematangsiantarController::class, 'SearchSummaryPematangsiantar']);
-Route::get('/SearchByPmtPematangsiantar/{slug}',[SummaryPematangsiantarController::class, 'SearchByPmtPematangsiantar']);
+// Route::resource('/SummaryDeliserdang',SummaryDeliserdangController::class);
+// Route::get('/SearchSummaryDeliserdang/{slug}',[SummaryDeliserdangController::class, 'SearchSummaryDeliserdang']);
+// Route::get('/SearchByPmtDeliserdang/{slug}',[SummaryDeliserdangController::class, 'SearchByPmtDeliserdang']);
+
+// Route::resource('/SummaryPematangsiantar',SummaryPematangsiantarController::class);
+// Route::get('/SearchSummaryPematangsiantar/{slug}',[SummaryPematangsiantarController::class, 'SearchSummaryPematangsiantar']);
+// Route::get('/SearchByPmtPematangsiantar/{slug}',[SummaryPematangsiantarController::class, 'SearchByPmtPematangsiantar']);

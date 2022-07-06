@@ -26,13 +26,42 @@ class SummaryDeliserdang extends Model
                     'tax_category' => $data['merchant']['tax_category'],
                     'summaries' => $data[$bulan],
                     'perangkat' => $sub2['pmt'],
-                    'bulan' => date("F",strtotime($bulan))
+                    'bulan' => date("F",strtotime($bulan)),
+                    'tahun' => $data['year']
                 ];
             }
         }
         return $isi;
     }
 
+    public function SimpanKeterangan($id, $keterangan, $tahun, $bulan)
+    {   
+
+        SummaryDeliserdang::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
+        SummaryDeliserdang::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
+        
+        $data_ = SummaryDeliserdang::where('year',$tahun,true)->where('merchant._id',$id,true)->get();
+        foreach ($data_ as $data) {
+            $data2 = TransactionDeliserdang::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
+            foreach ($data2 as $sub2) {
+                $isi[] = [
+                    'id' => $data['merchant']['_id'],
+                    'name' => $data['merchant']['name'],
+                    'nop' => $data['merchant']['nop'],
+                    'address' => $data['merchant']['address'],
+                    'information' => $data['merchant']['information'],
+                    'status' => $data['merchant']['status'],
+                    'tax_category' => $data['merchant']['tax_category'],
+                    'summaries' => $data[$bulan],
+                    'perangkat' => $sub2['pmt'],
+                    'bulan' => date("F",strtotime($bulan)),
+                    'tahun' => $data['year']
+                ];
+            }
+        }
+        return $isi;
+    }
+    
     public function GetDataByPmt($pmt, $tahun, $bulan)
     {
         $data_ = SummaryDeliserdang::where('year',$tahun,true)->get();
@@ -50,7 +79,8 @@ class SummaryDeliserdang extends Model
                         'tax_category' => $data['merchant']['tax_category'],
                         'summaries' => $data[$bulan],
                         'perangkat' => $sub2['pmt'],
-                        'bulan' => date("F",strtotime($bulan))
+                        'bulan' => date("F",strtotime($bulan)),
+                        'tahun' => $data['year']
                     ];
                 }
             }

@@ -383,7 +383,7 @@
     border-bottom-right-radius: 0;
   }
   .select2-container--default .select2-search--dropdown .select2-search__field {
-    border: 1px solid #aaa;
+    border: 1px solid teal;
   }
   .select2-container--default .select2-search--inline .select2-search__field {
     background: transparent;
@@ -461,7 +461,7 @@
   }
   .select2-container--default
     .select2-results__option--highlighted.select2-results__option--selectable {
-    background-color: #5897fb;
+    background-color: teal;
     color: white;
   }
   .select2-container--default .select2-results__group {

@@ -331,8 +331,8 @@ progress {
 }
 
 [type="search"] {
-  outline-offset: -2px;
-  -webkit-appearance: none;
+  /* outline-offset: -2px;
+  -webkit-appearance: none; */
 }
 
 [type="search"]::-webkit-search-decoration {
@@ -4797,8 +4797,8 @@ input[type="button"].btn-block {
 .page-item.active .page-link {
   z-index: 3;
   color: #fff;
-  background-color: #4e73df;
-  border-color: #4e73df;
+  background-color: teal;
+  border-color: teal;
 }
 
 .page-item.disabled .page-link {
@@ -10408,7 +10408,7 @@ a:focus {
 
 .sidebar .nav-item .collapse .collapse-inner .collapse-item.active,
 .sidebar .nav-item .collapsing .collapse-inner .collapse-item.active {
-  color: #4e73df;
+  color: teal;
   font-weight: 700;
 }
 

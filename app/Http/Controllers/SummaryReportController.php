@@ -18,12 +18,12 @@ class SummaryReportController extends Controller
     {
         //
         $isidata = SummaryReport::where('year','2022',true)->get();
-        // dd(SummaryReport::where('year','2022',true)->skip(2)->get());
         return view('dashboard.main-dashboard',[
             'main_menu' => 'dashboard',
-            'title' => 'Hellow',
+            'title' => 'Dashboard Monitoring',
             'datas' => $isidata,
             'slug' => '/',
+            'wilayah' => "",
             'MDN_IS_ACTIVE' => config('setting.MDN_IS_ACTIVE'),
             'BTM_IS_ACTIVE' => config('setting.BTM_IS_ACTIVE'),
             'BGL_IS_ACTIVE' => config('setting.BGL_IS_ACTIVE'),
