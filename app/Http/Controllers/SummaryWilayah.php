@@ -8,6 +8,8 @@ use App\Models\SummaryMedan;
 use App\Models\SummaryPematangsiantar;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isEmpty;
+
 class SummaryWilayah extends Controller
 {
     /**
@@ -107,6 +109,29 @@ class SummaryWilayah extends Controller
         }
     }
 
+    public function EditMerchant($slug)
+    {
+        $arr = explode("|",$slug);
+        $id = $arr[0];
+        $nama = $arr[1];
+        $status = $arr[2];
+        $wilayah = $arr[3];
+
+        if ($wilayah === "medan") {
+            $isidata = new SummaryMedan;
+            return($isidata->EditMerchant($id,$status,$nama));
+        } elseif ($wilayah === "batam") {
+            $isidata = new SummaryBatam;
+            return($isidata->EditMerchant($id,$status,$nama));
+        } elseif ($wilayah === "deliserdang") {
+            $isidata = new SummaryDeliserdang;
+            return($isidata->EditMerchant($id,$status,$nama));
+        } elseif ($wilayah === "pematangsiantar") {
+            $isidata = new SummaryPematangsiantar;
+            return($isidata->EditMerchant($id,$status,$nama));
+        }
+    }
+
     public function SummaryWilayah($slug)
     {
         $arr = explode("|",$slug);
@@ -134,37 +159,61 @@ class SummaryWilayah extends Controller
     {
         $arr = explode("|", $slug);
         $pmt = $arr[0];
-        $year = $arr[1];
-        $bulan = strtolower($arr[2]);
+        $arr[1] === "" || empty($arr[1]) ? $year = date("Y") : $year = $arr[1];
+        $arr[2] === "" || empty($arr[2]) ? $bulan = strtolower(date("M")) : $bulan = strtolower($arr[2]);
         $wilayah = $arr[3];
         if ($wilayah === "medan") {
             $isidata = new SummaryMedan;
-            if ($pmt <> "all") {
+            if ($pmt <> "all" || $pmt === "" || empty($pmt)) {
                 return ($isidata->GetDataByPmt($pmt, $year, $bulan));
             } else {
                 return ($isidata->merge($year, $bulan));
             }
         } elseif ($wilayah === "batam") {
             $isidata = new SummaryBatam;
-            if ($pmt <> "all") {
+            if ($pmt <> "all" || $pmt === "" || empty($pmt)) {
                 return ($isidata->GetDataByPmt($pmt, $year, $bulan));
             } else {
                 return ($isidata->merge($year, $bulan));
             }
         } elseif ($wilayah === "deliserdang") {
             $isidata = new SummaryDeliserdang;
-            if ($pmt <> "all") {
+            if ($pmt <> "all" || $pmt === "" || empty($pmt)) {
                 return ($isidata->GetDataByPmt($pmt, $year, $bulan));
             } else {
                 return ($isidata->merge($year, $bulan));
             }
         } elseif ($wilayah === "pematangsiantar") {
             $isidata = new SummaryPematangsiantar;
-            if ($pmt <> "all") {
+            if ($pmt <> "all" || $pmt === "" || empty($pmt)) {
                 return ($isidata->GetDataByPmt($pmt, $year, $bulan));
             } else {
                 return ($isidata->merge($year, $bulan));
             }
+        }
+    }
+
+    public function ExportToDoc($slug)
+    {
+        // param = tahun +"|"+ month + "|" + wilayah + "|" + perangkat;
+        $arr = explode("|",$slug);
+        $tahun = $arr[0];
+        $bulan = strtolower($arr[1]);
+        $wilayah = $arr[2];
+        $perangkat = $arr[3];
+
+        if ($wilayah === "medan") {
+            $isidata = new SummaryMedan;
+            return($isidata->ExportData($tahun, $bulan, $perangkat, $wilayah));
+        } elseif ($wilayah === "batam") {
+            $isidata = new SummaryBatam;
+            return($isidata->ExportData($tahun, $bulan, $perangkat, $wilayah));
+        } elseif ($wilayah === "deliserdang") {
+            $isidata = new SummaryDeliserdang;
+            return($isidata->ExportData($tahun, $bulan, $perangkat, $wilayah));
+        } elseif ($wilayah === "pematangsiantar") {
+            $isidata = new SummaryPematangsiantar;
+            return($isidata->ExportData($tahun, $bulan, $perangkat, $wilayah));
         }
     }
 
