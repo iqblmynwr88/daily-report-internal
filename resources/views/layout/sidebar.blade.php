@@ -52,7 +52,7 @@
     <a class="nav-link {{ $main_menu == 'parsing' ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#MenuParsing"
         aria-expanded="{{ $main_menu == 'parsing' ? 'true' : 'false' }}" aria-controls="MenuParsing">
         <i class="fas fa-fw fa-table"></i>
-        <span>Data Parsing</span>
+        <span>Heart Beat</span>
     </a>
     <input type="hidden" id="wilayah" value="{{ $wilayah }}">
     <div id="MenuParsing" class="collapse {{ $main_menu == 'parsing' ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
