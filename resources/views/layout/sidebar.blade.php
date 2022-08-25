@@ -22,8 +22,8 @@
 </div>
 <!-- Nav Item - Pages Collapse Menu -->
 <li class="nav-item {{ $main_menu == 'dailyreport' ? 'active' : '' }}">
-    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-        aria-expanded="true" aria-controls="collapseTwo">
+    <a class="nav-link {{ $main_menu == 'dailyreport' ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#collapseTwo"
+        aria-expanded="{{ $main_menu == 'dailyreport' ? 'true' : 'false' }}" aria-controls="collapseTwo">
         <i class="fas fa-fw fa-table"></i>
         <span>Daily Report</span>
     </a>
@@ -42,6 +42,33 @@
             <a class="collapse-item {{ $slug == '/summary/samosir' ? 'active' : '' }} {{ $SMS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/samosir">Samosir</a>
             <a class="collapse-item {{ $slug == '/summary/simalungun' ? 'active' : '' }} {{ $SML_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/simalungun">Simalungun</a>
             <a class="collapse-item {{ $slug == '/summary/tanjungpinang' ? 'active' : '' }} {{ $TJP_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/tanjungpinang">Tanjungpinang</a>
+            <a class="collapse-item {{ $slug == '/summary/langkat' ? 'active' : '' }} {{ $LGT_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/langkat">Langkat</a>
+            <a class="collapse-item {{ $slug == '/summary/labuanbatu' ? 'active' : '' }} {{ $LBB_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/labuanbatu">Labuhanbatu</a>
+            <a class="collapse-item {{ $slug == '/summary/asahan' ? 'active' : '' }} {{ $ASA_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/asahan">Asahan</a>
+        </div>
+    </div>
+</li>
+<li class="nav-item {{ $main_menu == 'parsing' ? 'active' : '' }}">
+    <a class="nav-link {{ $main_menu == 'parsing' ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#MenuParsing"
+        aria-expanded="{{ $main_menu == 'parsing' ? 'true' : 'false' }}" aria-controls="MenuParsing">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Data Parsing</span>
+    </a>
+    <input type="hidden" id="wilayah" value="{{ $wilayah }}">
+    <div id="MenuParsing" class="collapse {{ $main_menu == 'parsing' ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Wilayah</h6>
+            <a class="collapse-item {{ $slug == '/parsing/medan' ? 'active' : '' }} {{ $MDN_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/medan">Medan</a>
+            <a class="collapse-item {{ $slug == '/parsing/batam' ? 'active' : '' }} {{ $BTM_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/batam">Batam</a>
+            <a class="collapse-item {{ $slug == '/parsing/bengkulu' ? 'active' : '' }} {{ $BGL_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/bengkulu">Bengkulu</a>
+            <a class="collapse-item {{ $slug == '/parsing/binjai' ? 'active' : '' }} {{ $BJI_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/binjai">Binjai</a>
+            <a class="collapse-item {{ $slug == '/parsing/deliserdang' ? 'active' : '' }} {{ $DLS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/deliserdang">Deliserdang</a>
+            <a class="collapse-item {{ $slug == '/parsing/karo' ? 'active' : '' }} {{ $KRO_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/karo">Karo</a>
+            <a class="collapse-item {{ $slug == '/parsing/pekanbaru' ? 'active' : '' }} {{ $PKB_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/pekanbaru">Pekanbaru</a>
+            <a class="collapse-item {{ $slug == '/parsing/pematangsiantar' ? 'active' : '' }} {{ $PMT_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/pematangsiantar">Pematangsiantar</a>
+            <a class="collapse-item {{ $slug == '/parsing/samosir' ? 'active' : '' }} {{ $SMS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/samosir">Samosir</a>
+            <a class="collapse-item {{ $slug == '/parsing/simalungun' ? 'active' : '' }} {{ $SML_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/simalungun">Simalungun</a>
+            <a class="collapse-item {{ $slug == '/parsing/tanjungpinang' ? 'active' : '' }} {{ $TJP_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/tanjungpiang">Tanjungpinang</a>
         </div>
     </div>
 </li>

@@ -3,7 +3,7 @@
 @include('layout.main-head')
 <!-- Custom styles for this page -->
 <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-<script src="/js/sweetalert.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -38,7 +38,6 @@
                                             <i>Mohon diisi</i>
                                         </div>
                                     </div>
-                                    <input type="hidden" name="" id="total_hari" value="{{ date("t") }}">
                                 </div>
                                 <div class="col-md-3 col-sm-3 col-xs-3 col-lg-3">
                                     <select class="select2 form-control" style="width: 100%" id="perangkat_">
@@ -67,6 +66,7 @@
                     </div>
 
                     @php
+                    $total_tanggal = date("t");
                     $bulan = strtolower(date("M"));
                     @endphp
                     <div class="card shadow mb-4">
@@ -74,10 +74,14 @@
                             <h6 class="m-0 font-weight-bold text-secondary">Detail Data</h6>
                         </div>
                         <div class="card-body">
+                            <div class="page-loader text-center" id="spinner-main">
+                                <div class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden"></span>
+                                </div>
+                                <p class="text-success text-loader">Please wait...</p>
+                            </div>
                             <div class="table-responsive" id="TableDataDiv">
-                                <table class="table table-bordered table-striped" id="TableData" width='100%' cellspacing='0'>
-                                    
-                                </table>
+                                
                             </div>
                         </div>
                     </div>
@@ -214,6 +218,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
+                        <div class="page-loader text-center" id="spinner-edit-merchant">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden"></span>
+                            </div>
+                            <p class="text-success text-loader">Please wait...</p>
+                        </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12" id="form-edit-merchant">
                             <div id="pesan-sistem-edit-merchant">
                                 
@@ -230,10 +240,6 @@
                             <div class="mb-3">
                                 <label for="formGroupExampleInput2" class="form-label">Alamat</label>
                                 <textarea class="form-control" aria-label="With textarea" id="edit-alamat-wajib-pajak" readonly></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="formGroupExampleInput2" class="form-label">Keterangan</label>
-                                <textarea class="form-control" aria-label="With textarea" id="edit-keterangan-wajib-pajak"></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="formGroupExampleInput2" class="form-label">Status</label>
@@ -265,45 +271,31 @@
     <script src="/js/demo/datatables-demo.js"></script>
     <script>
         $(document).ready(function() {
-            let total_hari = parseInt($("#total_hari").val())+4;
-            let total_hari2 = $("#total_hari").val();
-            let oBulan = "";
+            $("#spinner-main").hide();
             $("#ResetDataMedan").hide();
             $("#perangkat_").prop("disabled",true);
-            load_data();
+            getStarted();
             var table_data = $("#TableData").DataTable({
-                processing : true,
-                language: {processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw text-success"></i><span class="sr-only">Loading...</span>'},
-                serverSide : true,
-                ordering : false,
-                retrieve : true,
+                ordering : false
             });
             $(".select2").select2();
             $(function () {
-                // $("#datepicker_months_only input").datepicker({
-                //     autoclose: true,
-                //     container: "#datepicker_months_only",
-                //     startView: "months",
-                //     viewMode: "months",
-                //     minViewMode: "months",
-                //     format: "M",
-                // }).on("change", function(e) {
-                //     y = new Date($("#year_").val()).getFullYear(); 
-                //     m = new Date(y+' '+$(this).val()).getMonth();
-                //     var firstDay = new Date(y, m, 1);
-                //     var lastDay = new Date(y, m + 1, 0);
-                //     $("#total_hari").val(lastDay.getDate());
-                // });
-                // $("#datepicker_years_only input").datepicker({
-                //     autoclose: true,
-                //     container: "#datepicker_years_only",
-                //     startView: "years",
-                //     viewMode: "years",
-                //     minViewMode: "years",
-                //     format: "yyyy",
-                // }).on("change", function (e) {
-                //     console.log($(this).val());
-                // });
+                $("#datepicker_months_only input").datepicker({
+                    autoclose: true,
+                    container: "#datepicker_months_only",
+                    startView: "months",
+                    viewMode: "months",
+                    minViewMode: "months",
+                    format: "M",
+                });
+                $("#datepicker_years_only input").datepicker({
+                    autoclose: true,
+                    container: "#datepicker_years_only",
+                    startView: "years",
+                    viewMode: "years",
+                    minViewMode: "years",
+                    format: "yyyy",
+                });
             });
             var table = $("#dataTableSummary").DataTable({
                     ordering : false,
@@ -398,12 +390,10 @@
             });
             $(document.body).delegate("#btn-save-edit-merchant","click",function(e){
                 e.preventDefault();
+                $("#spinner-edit-merchant").show();
+                $("#form-edit-merchant").hide();
                 $(this).prop("disabled",true);
-                $(this).html("Mohon tunggu...");
                 $("#btn-cancel-edit-merchant").prop("disabled",true);
-                tahun = $("#year_").val() === "" ? $("#year__").val() : $("#year_").val();
-                bulan = $("#month_").val() === "" ? $("#month__").val().toLowerCase() : $("#month_").val().toLowerCase();
-                keterangan = $("#edit-keterangan-wajib-pajak").val();
                 wilayah = $("#wilayah").val();
                 status = 0;
                 
@@ -416,34 +406,23 @@
                     status = 0;
                 }
 
-                param = id+"|"+nama+"|"+tahun+"|"+bulan+"|"+keterangan+"|"+status+"|"+wilayah;
+                param = id+"|"+nama+"|"+status+"|"+wilayah;
                 $.ajax({
                     url : "/EditMerchant/"+param,
                     success : function (result) {
+                        getDataAfterEdit();
+                        $("#spinner-edit-merchant").hide();
+                        $("#form-edit-merchant").show();
                         $("#btn-save-edit-merchant").prop("disabled",false);
-                        $("#btn-save-edit-merchant").html("Save");
                         $("#btn-cancel-edit-merchant").prop("disabled",false);
-                        $("#TableData").DataTable().ajax.reload(function () {
-                            if ( row.child.isShown() ) {
-                                row.child.hide();
-                                tr.removeClass('shown');
-                            }
-                            else {         
-                                if (tr.hasClass('shown')) {
-                                    row.child(format(row.data())).show();
-                                    tr.addClass('shown');                      
-                                }
-                            }
-                        },false);
                         $("#pesan-sistem-edit-merchant").empty();
-                        $("#pesan-sistem-edit-merchant").append("<div class='alert alert-success' role='alert'>"+result+"</div>");
+                        $("#pesan-sistem-edit-merchant").append("<div class='alert alert-success' role='alert'>Status telah disimpan, Terima kasih!</div>");
                     }
                 });
             });
             $(document.body).delegate("#btn-cancel-edit-merchant","click",function(e){
                 e.preventDefault();
                 $("#ModalEditMerchant").modal("hide");
-                $("#pesan-sistem-edit-merchant").empty();
             });
             function getDataAfterEdit() {
                 wilayah = $("#wilayah").val();
@@ -573,340 +552,289 @@
                     }
                 })
             });
-            $(document.body).delegate("#btn-refresh","click",function(e){
+            $(document.body).delegate("#perangkat_","change",function(e){
                 e.preventDefault();
-                tr = $(this).closest('tr');
-                row = $("#TableData").DataTable().row(tr);
-                open = row.child.isShown();
-                $("#TableData").DataTable().ajax.reload(function () {
-                    if ( row.child.isShown() ) {
-                        row.child.hide();
-                        tr.removeClass('shown');
-                    }
-                    else {         
-                        if (tr.hasClass('shown')) {
-                            row.child(format(row.data())).show();
-                            tr.addClass('shown');                      
-                        }
-                    }
-                },false);
-                $(".dataTables_filter input").val("");
-            });
-            
-            function load_data(start, length) {
-                let wilayah = $("#wilayah").val();
-                let year = $("#year_").val() === "" ? $("#year__").val() : $("#year_").val();
-                let month = $("#month_").val() === "" ? $("#month__").val().toLowerCase() : $("#month_").val().toLowerCase();
-                let xBulan = $("#month_").val() === "" ? $("#month__").val() : $("#month_").val();
-
-                let j = 1;
-                let param = year +"|"+month+"|"+wilayah;
-                let tanggal = 0;
-                $.fn.dataTable.ext.errMode = 'none';
-                let isiKolom = [
-                    {
-                        className: 'dt-control text-light',
-                        orderable: false,
-                        data: null,
-                        defaultContent: ''
-                    },
-                    {
-                        title: "<small>No.</small>",
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
-                    },
-                    {
-                        title: "<small>Merchant</small>",
-                        data: 'name',
-                        name: 'name',
-                    },
-                    {
-                        title: "<small>Perangkat</small>",
-                        data: 'perangkat',
-                        name: 'perangkat',
-                    },
-                    
-                ];
+                $("#perangkat_").val() === "" || $("#perangkat_").val() === null ? perangkat = "all" : perangkat = $("#perangkat_").val();
+                $("#year_").val() === "" ? year = $("#year__").val() : year = $("#year_").val();
+                $("#month_").val() === "" ? month = $("#month__").val() : month = $("#month_").val();
+                var wilayah = $("#wilayah").val();
+                var param = perangkat +"|"+ year +"|"+ month +"|"+ wilayah;
+                var no = 1;
+                var noTmp = "";
+                var tableHeaders = "";
+                var isiTable = ""
+                var isiHead = "" ;
+                var isiBody = "";
+                var isiSubBody = "";
+                var Row = 0;
+                $(".table-responsive").hide();
+                $("#spinner-main").show();
                 
-                for (let i = 0; i < 31; i++) {
-                    isiKolom.push({
-                        data:'summaries',
-                        name:'bebas',
-                        title: '<small>'+j+'</small>',
-                        className: 'text-center',
-                        render:function(data){
-                            if (data['data']['values'][i] !== undefined) {
-                                tanggal = data['data']['values'][i]['day'];
-                                amt = data['data']['values'][i]['amt'];
-                                status = data['status'];
-                                if (status === "1") {
-                                    if (amt === 0) {
-                                        return "<i class='fa fa-xmark' class='text-light'></i>";
+                if (perangkat !== "default" || perangkat !== null || perangkat != null) {
+                    $.ajax({
+                        url : "/SearchByPmt/"+param,
+                        success : function (result) {
+                            $("#spinner-main").hide();
+                            $(".table-responsive").show();
+                            $.each(result, function(iX, valX){
+                                noTmp = no++;
+                                $.each(valX.summaries.values, function(i, valZ){
+                                    if (valZ.amt === 0 || valZ.amt == 0) {
+                                        if (valX.status === 0 || valX.status == 0) {
+                                            isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-secondary'><small>"+valZ.day+"</small></td>";
+                                        } else {
+                                            isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-danger'><small>"+valZ.day+"</small></td>";
+                                        }
+                                    } else if (valZ.amt >= 200000) {
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month.toLowerCase()+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-success'><small>"+valZ.day+"</small></td>";
                                     } else {
-                                        return "<i class='fa fa-check' class='text-light'></i>";
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month.toLowerCase()+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-warning'><small>"+valZ.day+"</small></td>";
                                     }
+                                });
+                                if (valX.status === 0 || valX.status == 0) {
+                                    isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-danger'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                    isiSubBody = "";
                                 } else {
-                                    return "<i class='fa fa-minus' class='text-light'></i>";
+                                    isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-success'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                    isiSubBody = "";
                                 }
-                            } else {
-                                // console.log(i);
-                            }
-                        },
-                        createdCell: function (td, cellData, rowData, row, col) {
-                            if (status === "1") {
-                                if ( amt === 0 ) {
-                                    $(td).addClass('bg-danger text-light border border-light text-center');
-                                } else if ( amt >= 200000) {
-                                    $(td).addClass('bg-success text-light border border-light text-center');
-                                } else {
-                                    $(td).addClass('bg-warning text-light border border-light text-center');
-                                }
-                            } else if (status === "0") {
-                                $(td).addClass('bg-secondary text-light border border-light text-center');
-                            }
+                            });
+                            $.each(result[0].summaries.values, function(i, val){
+                                tableHeaders += "<th style='width: 1%;'><small>" + val.day + "</small></th>";
+                            });
+                            Row = result[0].summaries.values.length;
+                            isiHead = "<tr><th colspan='3' class='table-light'><Button class='btn btn-sm btn-success' id='btn-generate-excel'><i class='fas fa-download fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Detail data merchant?'></i> Export Data</Button></th><th colspan='"+Row+"' style='text-align:center' class='table-light'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
+                            isiTable = "<table class='table table-bordered table-striped' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
+                            $("#TableDataDiv").empty();
+                            $("#TableDataDiv").append(isiTable);
+                            $("#TableData").DataTable({
+                                ordering : false
+                            });
                         }
                     });
-                    j++;
                 }
-                var oTable = $("#TableData").DataTable({
-                    processing : true,
-                    language: {processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw text-success"></i><span class="sr-only">Loading...</span>'},
-                    serverSide : true,
-                    ordering : false,
-                    retrieve : true,
-                    ajax : {
-                        url : "/SummaryWilayah/"+param,
-                        data : {start : start, length : length},
-                    },
-                    responsive: {
-                        details: {
-                            type: 'column',
-                            target: -1
-                        }
-                    },
-                    columnDefs: [
-                        {
-                            "targets": [0,1],
-                            "searchable": false
-                        },
-                        {
-                            width: "20%",
-                            targets: [2]
-                        },
-                        {
-                            width: "10%",
-                            className: 'text-capitalize small',
-                            targets: [3]
-                        },
-                        {
-                            width: "1%",
-                            targets: [0,1]
-                        },
-                        {
-                            className: 'small',
-                            targets: "_all"
-                        }
-                    ],
-                    initComplete: function() {
-                        // Setting Keyword dengan diawali status code untuk menentukan action
-                        // 0 Searching by Name
-                        // 1 Searching by Tahun Bulan
-                        $(".dataTables_filter input").off().on("keyup" , function(e){
-                            if (e.keyCode === 13) {
-                                let keywords = ['0|'+this.value];
-                                oTable.search(keywords).draw();
-                            }
-                        }).on("input", function(i) {
-                            if (this.value === "") {
-                                let keywords = ['0|nothing'];
-                                oTable.search(keywords).draw();
+            });
+            $(document.body).delegate("#ResetDataMedan","click",function(e){
+                e.preventDefault();
+                var year = $("#year__").val();
+                var month = $("#month__").val().toLowerCase();
+                var wilayah = $("#wilayah").val();
+                var param = year +"|"+month +"|"+ wilayah;
+                var no = 1;
+                var noTmp = "";
+                var tableHeaders = "";
+                var isiTable = ""
+                var isiHead = "" ;
+                var isiBody = "";
+                var isiSubBody = "";
+                var Row = 0;
+                $("#ResetDataMedan").html("Mohon tunggu...");
+                $("#ResetDataMedan").prop("disabled",true);
+                $(".table-responsive").hide();
+                $("#spinner-main").show();
+                
+                $("#year_").val("");
+                $("#month_").val("");
+                $.ajax({
+                    url : "/SummaryWilayah/"+param,
+                    success : function (result) {
+                        $("#perangkat_").val("default").trigger("change");
+                        $("#perangkat_").prop("disabled",true);
+                        $("#spinner-main").hide();
+                        
+                        $(".table-responsive").show();
+                        $("#divSearch").empty();
+                        $("#divSearch").append("<center><button class='btn btn-sm btn-success' style='width: 100%;height: 38px' id='SearchDataMedan'><i class='fas fa-search fa-sm'></i> Search Data</button></center>");
+                        $("#year_").prop("disabled",false);
+                        $("#month_").prop("disabled",false);
+                        $.each(result, function(iX, valX){
+                            noTmp = no++;
+                            $.each(valX.summaries.values, function(i, valZ){
+                                if (valZ.amt === 0 || valZ.amt == 0) {
+                                    if (valX.status === 0 || valX.status == 0) {
+                                        isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-secondary'><small>"+valZ.day+"</small></td>";
+                                    } else {
+                                        isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-danger'><small>"+valZ.day+"</small></td>";
+                                    }
+                                } else if (valZ.amt >= 200000) {
+                                    isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-success'><small>"+valZ.day+"</small></td>";
+                                } else {
+                                    isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-warning'><small>"+valZ.day+"</small></td>";
+                                }
+                            });
+                            if (valX.status === 0 || valX.status == 0) {
+                                isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-danger'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                isiSubBody = "";
+                            } else {
+                                isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-success'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                isiSubBody = "";
                             }
                         });
-
-                        $(document.body).delegate("#SearchDataMedan","click",function(e){
-                            let year = $("#year_").val() === "" ? $("#year__").val() : $("#year_").val();
-                            let month = $("#month_").val() === "" ? $("#month__").val().toLowerCase() : $("#month_").val().toLowerCase();
-                            let total_hari = parseInt($("#total_hari").val())+4;
-                            let keywords = ['1|'+year+'|'+month];
-                            y = new Date(year).getFullYear(); 
-                            m = new Date(y+' '+month).getMonth();
-                            var firstDay = new Date(y, m, 1);
-                            var lastDay = new Date(y, m + 1, 0);
-                            oBulan = firstDay.toLocaleString('id-ID', { month: 'long' });
-                            oTable.search(keywords).draw();
-                            $(".dataTables_filter input").val("");
-                            $("#judul-table").html("<b>Data Transaksi Bulan "+oBulan+"</b>");
+                        $.each(result[0].summaries.values, function(i, val){
+                            tableHeaders += "<th style='width: 1%;'><small>" + val.day + "</small></th>";
+                        });
+                        Row = result[0].summaries.values.length;
+                        isiHead = "<tr><th colspan='3' class='table-light'><Button class='btn btn-sm btn-success' id='btn-generate-excel'><i class='fas fa-download fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Detail data merchant?'></i> Export Data</Button></th><th colspan='"+Row+"' style='text-align:center' class='table-light'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
+                        isiTable = "<table class='table table-bordered table-striped' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
+                        $("#TableDataDiv").empty();
+                        $("#TableDataDiv").append(isiTable);
+                        $("#TableData").DataTable({
+                            ordering : false
+                        });
+                    }
+                });
+            });
+            $(document.body).delegate("#SearchDataMedan","click",function(e){
+                e.preventDefault();
+                var year = $("#year_").val();
+                var month = $("#month_").val().toLowerCase();
+                var wilayah = $("#wilayah").val();
+                var param = year +"|"+month+"|"+wilayah;
+                var no = 1;
+                var noTmp = "";
+                var tableHeaders = "";
+                var isiTable = ""
+                var isiHead = "" ;
+                var isiBody = "";
+                var isiSubBody = "";
+                var Row = 0;
+                $("#year_").removeClass("is-invalid");
+                $("#error-year").hide();
+                $("#month_").removeClass("is-invalid");
+                $("#error-month").hide();
+                if (year === "" && month !== "") {
+                    $("#year_").addClass("is-invalid");
+                    $("#month_").addClass("is-valid");
+                    $("#error-year").show();
+                } else if (month === "" && year !== "") {
+                    $("#month_").addClass("is-invalid");
+                    $("#year_").addClass("is-valid");
+                    $("#error-month").show();
+                } else if (year === "" && month === "") {
+                    $("#year_").addClass("is-invalid");
+                    $("#error-year").show();
+                    $("#month_").addClass("is-invalid");
+                    $("#error-month").show();
+                } else if (year !== "" && month !== "") {
+                    $("#SearchDataMedan").html("Mohon tunggu...");
+                    $("#SearchDataMedan").prop("disabled",true);
+                    $(".table-responsive").hide();
+                    $("#spinner-main").show();
+                    
+                    $.ajax({
+                        url : "/SummaryWilayah/"+param,
+                        success : function (result) {
                             $("#perangkat_").prop("disabled",false);
+                            $("#spinner-main").hide();
+                            
+                            $(".table-responsive").show();
                             $("#divSearch").empty();
                             $("#divSearch").append("<center><button class='btn btn-sm btn-danger' style='width: 100%;height: 38px' id='ResetDataMedan'><i class='fas fa-trash fa-sm'></i> Reset Data</button></center>");
                             $("#year_").prop("disabled",true);
                             $("#month_").prop("disabled",true);
-                            if (total_hari === 35) {
-                                oTable.columns([32,33,34]).visible(true,true);
-                            } else if (total_hari === 34) {
-                                oTable.columns([33]).visible(true,true);
-                                oTable.columns([34]).visible(false,false);
-                                oTable.columns([32]).visible(true,true);
-                            } else {
-                                for (let x = total_hari; x<35; x++) {
-                                    oTable.columns(x).visible(false,false);
+                            $.each(result, function(iX, valX){
+                                noTmp = no++;
+                                $.each(valX.summaries.values, function(i, valZ){
+                                    if (valZ.amt === 0 || valZ.amt == 0) {
+                                        if (valX.status === 0 || valX.status == 0) {
+                                            isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-secondary'><small>"+valZ.day+"</small></td>";
+                                        } else {
+                                            isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-danger'><small>"+valZ.day+"</small></td>";
+                                        }
+                                    } else if (valZ.amt >= 200000) {
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-success'><small>"+valZ.day+"</small></td>";
+                                    } else {
+                                        isiSubBody += "<td id='col-det' data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-warning'><small>"+valZ.day+"</small></td>";
+                                    }
+                                });
+                                if (valX.status === 0 || valX.status == 0) {
+                                    isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-danger'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                    isiSubBody = "";
+                                } else {
+                                    isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-success'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                    isiSubBody = "";
                                 }
-                            }
-                        });
-
-                        $(document.body).delegate("#ResetDataMedan","click",function(e){
-                            e.preventDefault();
-                            $("#year_").val("");
-                            $("#month_").val("");
-                            $("#perangkat_").val("default").trigger("change");
-                            $("#perangkat_").prop("disabled",true);
-                            $("#year_").prop("disabled",false);
-                            $("#month_").prop("disabled",false);
-                            
-                            let year = $("#year_").val() === "" ? $("#year__").val() : $("#year_").val();
-                            let month = $("#month_").val() === "" ? $("#month__").val().toLowerCase() : $("#month_").val().toLowerCase();
-                            let total_hari = parseInt($("#total_hari").val())+4;
-                            let keywords = ['1|'+year+'|'+month];
-                            y = new Date(year).getFullYear(); 
-                            m = new Date(y+' '+month).getMonth();
-                            var firstDay = new Date(y, m, 1);
-                            var lastDay = new Date(y, m + 1, 0);
-                            oBulan = firstDay.toLocaleString('id-ID', { month: 'long' });
-                            oTable.search(keywords).draw();
-                            $(".dataTables_filter input").val("");
-                            $("#judul-table").html("<b>Data Transaksi Bulan "+oBulan+"</b>");
-                            $("#divSearch").empty();
-                            $("#divSearch").append("<center><button class='btn btn-sm btn-success' style='width: 100%;height: 38px' id='SearchDataMedan'><i class='fas fa-search fa-sm'></i> Search Data</button></center>");
-                            if (total_hari === 35) {
-                                oTable.columns([32,33,34]).visible(true,true);
-                            } else if (total_hari === 34) {
-                                oTable.columns([33]).visible(true,true);
-                                oTable.columns([34]).visible(false,false);
-                                oTable.columns([32]).visible(true,true);
-                            } else {
-                                for (let x = total_hari; x<35; x++) {
-                                    oTable.columns(x).visible(false,false);
-                                }
-                            }
-                        });
-
-                        $("#datepicker_months_only input").datepicker({
-                            autoclose: true,
-                            container: "#datepicker_months_only",
-                            startView: "months",
-                            viewMode: "months",
-                            minViewMode: "months",
-                            format: "M",
-                        }).on("change", function(e) {
-                            y = new Date($("#year_").val()).getFullYear(); 
-                            m = new Date(y+' '+$(this).val()).getMonth();
-                            var firstDay = new Date(y, m, 1);
-                            var lastDay = new Date(y, m + 1, 0);
-                            $("#total_hari").val(lastDay.getDate());
-                            total_hari = lastDay.getDate();
-                            total_hari2 = lastDay.getDate();
-                            // oBulan = firstDay.toLocaleString('id-ID', { month: 'long' });
-                            oBulan = "";
-                            // console.log(oBulan);
-                        });
-                        $("#datepicker_years_only input").datepicker({
-                            autoclose: true,
-                            container: "#datepicker_years_only",
-                            startView: "years",
-                            viewMode: "years",
-                            minViewMode: "years",
-                            format: "yyyy",
-                        }).on("change", function (e) {
-                            // console.log($(this).val());
-                        });
-                        console.log(oBulan);
-
-                        y = new Date(year).getFullYear(); 
-                        m = new Date(y+' '+xBulan).getMonth();
-                        var firstDay = new Date(y, m, 1);
-                        var lastDay = new Date(y, m + 1, 0);
-                        oBulan = firstDay.toLocaleString('id-ID', { month: 'long' });
-
-                        $(".dataTables_length").empty();
-                        $(".dataTables_length").append("<button class='btn btn-sm btn-success ml-1 mr-1' id='btn-refresh'><i class='fas fa-refresh fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Refresh Data.'></i></button><Button class='btn btn-sm btn-success mr-3' id='btn-generate-excel'><i class='fas fa-download fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Detail data merchant?'></i></Button><small class='text-secondary' id='judul-table'><b>Data Transaksi Bulan "+oBulan+"</b></small>");
-
-                        for (let x = total_hari; x<35; x++) {
-                            oTable.columns(x).visible(false,false);
+                            });
+                            $.each(result[0].summaries.values, function(i, val){
+                                tableHeaders += "<th style='width: 1%;'><small>" + val.day + "</small></th>";
+                            });
+                            Row = result[0].summaries.values.length;
+                            isiHead = "<tr><th colspan='3' class='table-light'><Button class='btn btn-sm btn-success' id='btn-generate-excel'><i class='fas fa-download fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Detail data merchant?'></i> Export Data</Button></th><th colspan='"+Row+"' style='text-align:center' class='table-light'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
+                            isiTable = "<table class='table table-bordered table-striped' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
+                            $("#TableDataDiv").empty();
+                            $("#TableDataDiv").append(isiTable);
+                            $("#TableData").DataTable({
+                                ordering : false
+                            });
                         }
-
-                        $(document.body).delegate("#perangkat_","change",function(e){
-                            e.preventDefault();
-                            $("#perangkat_").val() === "" || $("#perangkat_").val() === null ? perangkat = "all" : perangkat = $("#perangkat_").val();
-                            let year = $("#year_").val() === "" ? $("#year__").val() : $("#year_").val();
-                            let month = $("#month_").val() === "" ? $("#month__").val().toLowerCase() : $("#month_").val().toLowerCase();
-                            let total_hari = parseInt($("#total_hari").val())+4;
-                            let keywords = ['1|'+year+'|'+month+'|'+perangkat];
-                            oTable.search(keywords).draw();
-                            $(".dataTables_filter input").val("");
+                    });
+                };
+            });
+            $(document.body).delegate("#btn-refresh","click",function(e){
+                e.preventDefault();
+                $("#TableData").DataTable().ajax.reload(null, false);
+            });
+            function getStarted () {
+                var wilayah = $("#wilayah").val();
+                var year = $("#year__").val();
+                var month = $("#month__").val().toLowerCase();
+                var param = year +"|"+month+"|"+wilayah;
+                var no = 1;
+                var noTmp = "";
+                var tableHeaders = "";
+                var isiTable = ""
+                var isiHead = "" ;
+                var isiBody = "";
+                var isiSubBody = "";
+                var Row = 0;
+                $(".table-responsive").hide();
+                $("#spinner-main").show();
+                
+                var test = "";
+                $.ajax({
+                    url : "/SummaryWilayah/"+param,
+                    success : function (result) {
+                        $("#spinner-main").hide();
+                        
+                        $(".table-responsive").show();
+                        console.log(result);
+                        $.each(result, function(iX, valX){
+                            noTmp = no++;
+                            $.each(valX.summaries.values, function(i, valZ){
+                                if (valZ.amt === 0 || valZ.amt == 0) {
+                                    if (valX.status === 0 || valX.status == 0) {
+                                        isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-secondary'><small>"+valZ.day+"</small></td>";
+                                    } else {
+                                        isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-danger'><small>"+valZ.day+"</small></td>";
+                                    }
+                                } else if (valZ.amt >= 200000) {
+                                    isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-success'><small>"+valZ.day+"</small></td>";
+                                } else {
+                                    isiSubBody += "<td id='col-det'  data-bulan='"+month+"' data-tahun='"+valX.tahun+"' data-index='"+i+"' data-nop='"+valX.nop+"' data-day='"+valZ.day+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"' data-target='#DetailSummary' data-name='"+valX.name.replace("'","&#39")+"' data-id='"+valX.id.$oid+"' style='color:white;!important;border: 0.001em solid' class='bg-warning'><small>"+valZ.day+"</small></td>";
+                                }
+                            });
+                            if (valX.status === 0 || valX.status == 0) {
+                                isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-danger'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                isiSubBody = "";
+                            } else {
+                                isiBody += "<tr><td><small>"+noTmp+"</small></td><td id='col-detail-merchant' data-id='"+valX.id.$oid+"' data-name='"+valX.name.replace("'","&#39")+"' data-tax='"+valX.tax_category+"' data-address='"+valX.address+"' data-status='"+valX.status+"' data-information='"+valX.information+"'><small><i class='fa fa-info-circle fa-sm text-success'></i> "+valX.name+"</small></td><td><small>"+valX.perangkat+"</small></td>"+isiSubBody+"</tr>";
+                                isiSubBody = "";
+                            }
                         });
-
-                    },
-                    drawCallback: function(setting) {
-                        // console.log("Test");
-                    },
-                    order: [
-                        [1, "asc"]
-                    ],
-                    columns: isiKolom,
-                });
-            }
-
-            $('#TableData tbody').on('click', 'td.dt-control', function () {
-                tr = $(this).closest('tr');
-                row = $("#TableData").DataTable().row( tr );
-                open = row.child.isShown();
-                $("#TableData").DataTable().rows().every( function ( rowIdx, tableLoop, rowLoop ) {
-                    if (this.child.isShown()) {
-                        this.child.hide();
-                        $(this.node()).removeClass('shown');
+                        $.each(result[0].summaries.values, function(i, val){
+                            tableHeaders += "<th style='width: 1%;'><small>" + val.day + "</small></th>";
+                        });
+                        Row = result[0].summaries.values.length;
+                        isiHead = "<tr><th colspan='3' class='table-light'><button class='btn btn-sm btn-outline-success mr-1' id='btn-refresh'><i class='fas fa-refresh fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Refresh Data.'></i></button><Button class='btn btn-sm btn-outline-success' id='btn-generate-excel'><i class='fas fa-download fa-sm' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-custom-class='custom-tooltip' title='Detail data merchant?'></i></Button></th><th colspan='"+Row+"' style='text-align:center' class='table-light'><small>Data Transaksi Bulan "+result[0].bulan+"</small></th></tr></tr><tr><th style='width: 1%;'><small>No.</small></th><th style='width: 20%;'><small>Wajib Pajak</small><th style='width: 10%;'><small>Perangkat</small></th>"+tableHeaders+"</tr>";
+                        isiTable = "<table class='table table-bordered table-striped' id='TableData' width='100%' cellspacing='0'><thead id='TableDataHeader'>"+isiHead+"</thead><tbody>"+isiBody+"</tbody></table>";
+                        $("#TableDataDiv").empty();
+                        $("#TableDataDiv").append(isiTable);
+                        $("#TableData").DataTable({
+                            ordering : false
+                        });
                     }
                 });
-                if (!open) {
-                    row.child(format(row.data())).show();
-                    tr.addClass('shown');
-                }
-            });
-            
-            function format(d) {
-                let body1 = "";
-                let body2 = "";
-                let body3 = "";
-                let body4 = "";
-                let keterangan = "";
-                let status = "";
-                for (i = 0; i < 11; i++) {
-                    body1 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td></tr>";
-                }
-                for (i = 11; i < 22; i++) {
-                    body2 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td></tr>";
-                }
-                for (i = 22; i < total_hari2; i++) {
-                    body3 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td></tr>";
-                }
-                keterangan = d.summaries.data.keterangan === undefined ? "-" : d.summaries.data.keterangan;
-                status = d.summaries.status == "1" ? "Aktif" : "Tidak Aktif";
-                // status = d.summaries.status;
-                body4 = "<tr><td><small>"+keterangan+"</small></td></tr><tr><td><small><b>Status</b></small></td></tr><tr><td><small>"+status+"</small></td></tr><tr><td><button class='btn btn-sm btn-outline-success' id='btn-edit-data' data-nama='"+d.name+"' data-alamat='"+d.address+"' data-status='"+d.summaries.status+"' data-keterangan='"+keterangan+"' data-kategori='"+d.tax_category+"' data-id='"+d.id.$oid+"'><i class='fa fa-edit'></i> Edit Data</button></td></tr>";
-                let oTable1 = "<div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tanggal</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th></tr><tbody>"+body1+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tanggal</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th></tr><tbody>"+body2+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tanggal</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th></tr><tbody>"+body3+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light'><tr><th><small><b>Keterangan</b></small></th></tr><tbody>"+body4+"</tbody></table></div>";
-                let oTable = "<div class='row bg-light'>"+oTable1+"</div>";
-                return (oTable);
             }
-
-            $(document.body).delegate("#btn-edit-data","click",function(e) {
-                e.preventDefault(e);
-                $("#edit-id-wajib-pajak").val($(this).attr("data-id"));
-                $("#edit-nama-wajib-pajak").val($(this).attr("data-nama"));
-                $("#edit-tax-wajib-pajak").val($(this).attr("data-kategori"));
-                $("#edit-alamat-wajib-pajak").val($(this).attr("data-alamat"));
-                $("#edit-keterangan-wajib-pajak").val($(this).attr("data-keterangan"));
-                $(this).attr("data-status") === "1" ? $("#edit-status-aktif-wajib-pajak").prop("checked","checked") : $("#edit-status-tidak-aktif-wajib-pajak").prop("checked","checked");
-                $("#ModalEditMerchant").modal("show");
-            })
 
             function number_format (number, decimals, decPoint, thousandsSep) { 
                 number = (number + '').replace(/[^0-9+\-Ee.]/g, '')

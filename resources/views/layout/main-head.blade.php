@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/img/icon.png">
     <title>{{ $title }}</title>
     <!-- Custom fonts for this template-->
-    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700;800;900" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">

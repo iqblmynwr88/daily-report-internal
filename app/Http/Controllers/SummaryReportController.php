@@ -16,7 +16,13 @@ class SummaryReportController extends Controller
      */
     public function index()
     {
-        //
+        return view('login.index',[
+            'title' => 'Login Please...',
+        ]);
+    }
+
+    public function dashboard()
+    {
         $isidata = SummaryReport::where('year','2022',true)->get();
         return view('dashboard.main-dashboard',[
             'main_menu' => 'dashboard',
@@ -35,6 +41,9 @@ class SummaryReportController extends Controller
             'SMS_IS_ACTIVE' => config('setting.SMS_IS_ACTIVE'),
             'SML_IS_ACTIVE' => config('setting.SML_IS_ACTIVE'),
             'TJP_IS_ACTIVE' => config('setting.TJP_IS_ACTIVE'),
+            'LGT_IS_ACTIVE' => config('setting.LGT_IS_ACTIVE'),
+            'LBB_IS_ACTIVE' => config('setting.LBB_IS_ACTIVE'),
+            'ASA_IS_ACTIVE' => config('setting.ASA_IS_ACTIVE'),
         ]);
     }
 

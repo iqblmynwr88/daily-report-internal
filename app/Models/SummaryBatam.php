@@ -6,88 +6,145 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use stdClass;
 
 class SummaryBatam extends Model
 {
     protected $connection = "dbbatam";
     protected $collection = "summaries";
 
-    public function merge($tahun, $bulan)
+    public function merge($tahun, $bulan, $start, $length, $keyword)
     {
-        $data_ = SummaryBatam::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->get();
-        foreach ($data_ as $data) {
-            $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
-            foreach ($data2 as $sub2) {
-                $isi[] = [
-                    'id' => $data['merchant']['_id'],
-                    'name' => $data['merchant']['name'],
-                    'nop' => $data['merchant']['nop'],
-                    'address' => $data['merchant']['address'],
-                    'information' => $data['merchant']['information'],
-                    'status' => $data['merchant']['status'],
-                    'tax_category' => $data['merchant']['tax_category'],
-                    'summaries' => $data[$bulan],
-                    'perangkat' => $sub2['pmt'],
-                    'bulan' => date("F",strtotime($bulan)),
-                    'tahun' => $data['year']
-                ];
+        try {
+            if (empty($keyword) || $keyword === "") {
+                $total = SummaryBatam::where('year',$tahun,true)->groupBy('merchant')->get();
+                $data_ = SummaryBatam::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+            } else {
+                $total = SummaryBatam::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->groupBy('merchant')->get();
+                $data_ = SummaryBatam::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
             }
-        }
-        return $isi;
-    }
-
-    public function SimpanKeterangan($id, $keterangan, $tahun, $bulan)
-    {   
-
-        SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
-        SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
-        
-        $data_ = SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->orderBy('merchant.name', 'asc')->get();
-        foreach ($data_ as $data) {
-            $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
-            foreach ($data2 as $sub2) {
-                $isi[] = [
-                    'id' => $data['merchant']['_id'],
-                    'name' => $data['merchant']['name'],
-                    'nop' => $data['merchant']['nop'],
-                    'address' => $data['merchant']['address'],
-                    'information' => $data['merchant']['information'],
-                    'status' => $data['merchant']['status'],
-                    'tax_category' => $data['merchant']['tax_category'],
-                    'summaries' => $data[$bulan],
-                    'perangkat' => $sub2['pmt'],
-                    'bulan' => date("F",strtotime($bulan)),
-                    'tahun' => $data['year']
-                ];
-            }
-        }
-        return $isi;
-    }
-
-    public function GetDataByPmt($pmt, $tahun, $bulan)
-    {
-        $data_ = SummaryBatam::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->get();
-        foreach ($data_ as $data) {
-            $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
-            foreach ($data2 as $sub2) {
-                if ($sub2['pmt'] === $pmt) {
+            foreach ($data_ as $data) {
+                $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
+                foreach ($data2 as $sub2) {
+                    $start++;
                     $isi[] = [
                         'id' => $data['merchant']['_id'],
                         'name' => $data['merchant']['name'],
                         'nop' => $data['merchant']['nop'],
                         'address' => $data['merchant']['address'],
                         'information' => $data['merchant']['information'],
-                        'status' => $data['merchant']['status'],
                         'tax_category' => $data['merchant']['tax_category'],
-                        'summaries' => $data[$bulan],
+                        'summaries' => [
+                            'data' => $data[$bulan],
+                            'status' => $data['merchant']['status'],
+                        ],
                         'perangkat' => $sub2['pmt'],
                         'bulan' => date("F",strtotime($bulan)),
-                        'tahun' => $data['year']
+                        'tahun' => $data['year'],
+                        'DT_RowIndex' => $start
                     ];
                 }
             }
+            $response = new stdClass();
+            $response -> total = count($total);
+            $response -> data = $isi;
+            $response -> rc = "00";
+            $response -> pesan = "Sukses";
+            return json_encode($response);
+        } catch (\Throwable $th) {
+            $pesan = $th->getMessage();
+            $response = new stdClass();
+            $response -> total = 0;
+            $response -> data = "";
+            $response -> rc = "05";
+            $response -> pesan = $pesan;
+            return json_encode($response);
         }
-        return $isi;
+    }
+
+    public function SimpanKeterangan($id, $keterangan, $tahun, $bulan, $status, $nama)
+    {   
+        SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
+        SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
+        MerchantBatam::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
+        TransactionBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+        TransactionBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
+        SummaryBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+    }
+
+    public function GetDataByPmt($tahun, $bulan, $start, $length, $keyword)
+    {
+        try {
+            if ($keyword === "all") {
+                $data_ = SummaryBatam::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                foreach ($data_ as $data) {
+                    $total = SummaryBatam::where('year',$tahun,true)->groupBy('merchant')->get();
+                    $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'])->take(1)->get();
+                    foreach ($data2 as $sub2) {
+                        $start++;
+                        $isi[] = [
+                            'id' => $data['merchant']['_id'],
+                            'name' => $data['merchant']['name'],
+                            'nop' => $data['merchant']['nop'],
+                            'address' => $data['merchant']['address'],
+                            'information' => $data['merchant']['information'],
+                            'tax_category' => $data['merchant']['tax_category'],
+                            'summaries' => [
+                                'data' => $data[$bulan],
+                                'status' => $data['merchant']['status'],
+                            ],
+                            'perangkat' => $sub2['pmt'],
+                            'bulan' => date("F",strtotime($bulan)),
+                            'tahun' => $data['year'],
+                            'DT_RowIndex' => $start
+                        ];
+                    }
+                }
+            } else {
+                $awal = TransactionBatam::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                foreach ($awal as $dt_awal) {
+                    $data_ = SummaryBatam::where('year',$tahun)->where('merchant.name',$dt_awal['merchant']['name'])->orderBy('merchant.name', 'asc')->get();
+                    foreach ($data_ as $data) {
+                        $total = TransactionBatam::where('pmt',$keyword)->get();
+                        $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'])->where('pmt',$keyword,true)->take(1)->get();
+                        foreach ($data2 as $sub2) {
+                            $start++;
+                            $isi[] = [
+                                'id' => $data['merchant']['_id'],
+                                'name' => $data['merchant']['name'],
+                                'nop' => $data['merchant']['nop'],
+                                'address' => $data['merchant']['address'],
+                                'information' => $data['merchant']['information'],
+                                'tax_category' => $data['merchant']['tax_category'],
+                                'summaries' => [
+                                    'data' => $data[$bulan],
+                                    'status' => $data['merchant']['status'],
+                                ],
+                                'perangkat' => $sub2['pmt'],
+                                'bulan' => date("F",strtotime($bulan)),
+                                'tahun' => $data['year'],
+                                'DT_RowIndex' => $start
+                            ];
+                        }
+                    }
+                }
+            }
+            
+            $response = new stdClass();
+            $response -> total = count($total);
+            $response -> data = $isi;
+            $response -> rc = "00";
+            $response -> pesan = "Sukses";
+            return json_encode($response);
+        } catch (\Throwable $th) {
+            $pesan = $th->getMessage();
+            $response = new stdClass();
+            $response -> total = 0;
+            $response -> data = "";
+            $response -> rc = "05";
+            $response -> pesan = $pesan;
+            return json_encode($response);
+        }
     }
 
     public function trx($merchant, $year)
@@ -100,14 +157,20 @@ class SummaryBatam extends Model
         return TransactionBatam::groupBy('pmt')->get(['pmt']);
     }
 
-    public function EditMerchant($id, $status, $nama)
+    public function EditMerchant($id, $keterangan, $tahun, $bulan, $status, $nama)
     {
-        // update collection merchant
-        MerchantBatam::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
-        TransactionBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
-        TransactionBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
-        SummaryBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
-        return $status;
+        try {
+            SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
+            SummaryBatam::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
+            MerchantBatam::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
+            TransactionBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+            TransactionBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
+            SummaryBatam::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+            return "Proses update sukses, Terima kasih!";
+        } catch (\Throwable $th) {
+            $pesan = $th->getMessage();
+            return $pesan;
+        }
     }
 
     public function ExportData($tahun, $bulan, $perangkat , $wilayah)

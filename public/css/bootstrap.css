@@ -10417,4 +10417,37 @@ fieldset:disabled .btn {
     display: none !important;
   }
 }
+td.dt-control::after{
+  background-image : url(/img/plus.png) !important;
+  background-size: 13px 13px;
+  display: inline-block;
+  width: 13px; 
+  height: 13px;
+  content:"";
+}
+tr.shown td.dt-control::after{
+  background-image: url(/img/minus.png) !important;
+  background-size: 13px 13px;
+  display: inline-block;
+  width: 13px; 
+  height: 13px;
+  content:"";
+}
+.my-login {
+  margin-top: 8rem !important;
+  margin-bottom: 8rem !important;
+}
+.page-loader1 {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    bottom: 50%;
+}
+
+.isi-container {
+  display: none;
+  width: 100%;
+  justify-content: center;
+}
 /*# sourceMappingURL=bootstrap.min.css.map */

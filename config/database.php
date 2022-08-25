@@ -179,6 +179,30 @@ return [
             'username' => env('MONGO_TJP_DB_USERNAME'),
             'password' => env('MONGO_TJP_DB_PASSWORD'),
         ],
+        'dblangkat' => [
+            'driver' => 'mongodb',
+            'host' => env('MONGO_LGT_DB_HOST'),
+            'port'     => env('MONGO_LGT_DB_PORT'),
+            'database' => env('MONGO_LGT_DB_DATABASE'),
+            'username' => env('MONGO_LGT_DB_USERNAME'),
+            'password' => env('MONGO_LGT_DB_PASSWORD'),
+        ],
+        'dblabuanbatu' => [
+            'driver' => 'mongodb',
+            'host' => env('MONGO_LBB_DB_HOST'),
+            'port'     => env('MONGO_LBB_DB_PORT'),
+            'database' => env('MONGO_LBB_DB_DATABASE'),
+            'username' => env('MONGO_LBB_DB_USERNAME'),
+            'password' => env('MONGO_LBB_DB_PASSWORD'),
+        ],
+        'dbasahan' => [
+            'driver' => 'mongodb',
+            'host' => env('MONGO_ASA_DB_HOST'),
+            'port'     => env('MONGO_ASA_DB_PORT'),
+            'database' => env('MONGO_ASA_DB_DATABASE'),
+            'username' => env('MONGO_ASA_DB_USERNAME'),
+            'password' => env('MONGO_ASA_DB_PASSWORD'),
+        ],
     ],
 
     /*

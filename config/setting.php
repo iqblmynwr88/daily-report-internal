@@ -11,5 +11,8 @@ return [
     'PMT_IS_ACTIVE' => env('PMT_IS_ACTIVE'),
     'SMS_IS_ACTIVE' => env('SMS_IS_ACTIVE'),
     'SML_IS_ACTIVE' => env('SML_IS_ACTIVE'),
-    'TJP_IS_ACTIVE' => env('TJP_IS_ACTIVE')
+    'TJP_IS_ACTIVE' => env('TJP_IS_ACTIVE'),
+    'LGT_IS_ACTIVE' => env('LGT_IS_ACTIVE'),
+    'LBB_IS_ACTIVE' => env('LBB_IS_ACTIVE'),
+    'ASA_IS_ACTIVE' => env('ASA_IS_ACTIVE'),
 ];

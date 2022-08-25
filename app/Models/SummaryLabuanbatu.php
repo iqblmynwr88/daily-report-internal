@@ -8,23 +8,23 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use stdClass;
 
-class SummaryMedan extends Model
+class SummaryLabuanbatu extends Model
 {
-    protected $connection = "dbmedan";
+    protected $connection = "dblabuanbatu";
     protected $collection = "summaries";
     
     public function merge($tahun, $bulan, $start, $length, $keyword)
     {
         try {
             if (empty($keyword) || $keyword === "") {
-                $total = SummaryMedan::where('year',$tahun,true)->groupBy('merchant')->get();
-                $data_ = SummaryMedan::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $total = SummaryLabuanbatu::where('year',$tahun,true)->groupBy('merchant')->get();
+                $data_ = SummaryLabuanbatu::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
             } else {
-                $total = SummaryMedan::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->groupBy('merchant')->get();
-                $data_ = SummaryMedan::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $total = SummaryLabuanbatu::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->groupBy('merchant')->get();
+                $data_ = SummaryLabuanbatu::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
             }
             foreach ($data_ as $data) {
-                $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
+                $data2 = TransactionLabuanbatu::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
                 foreach ($data2 as $sub2) {
                     $start++;
                     $isi[] = [
@@ -64,12 +64,12 @@ class SummaryMedan extends Model
     
     public function SimpanKeterangan($id, $keterangan, $tahun, $bulan, $status, $nama)
     {   
-        SummaryMedan::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
-        SummaryMedan::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
-        MerchantMedan::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
-        TransactionMedan::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
-        TransactionMedan::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
-        SummaryMedan::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+        SummaryLabuanbatu::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
+        SummaryLabuanbatu::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
+        MerchantLabuanbatu::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
+        TransactionLabuanbatu::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+        TransactionLabuanbatu::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
+        SummaryLabuanbatu::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
         
     }
 
@@ -77,10 +77,10 @@ class SummaryMedan extends Model
     {
         try {
             if ($keyword === "all") {
-                $data_ = SummaryMedan::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $data_ = SummaryLabuanbatu::where('year',$tahun,true)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
                 foreach ($data_ as $data) {
-                    $total = SummaryMedan::where('year',$tahun,true)->groupBy('merchant')->get();
-                    $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'])->take(1)->get();
+                    $total = SummaryLabuanbatu::where('year',$tahun,true)->groupBy('merchant')->get();
+                    $data2 = TransactionLabuanbatu::where('merchant.name',$data['merchant']['name'])->take(1)->get();
                     foreach ($data2 as $sub2) {
                         $start++;
                         $isi[] = [
@@ -102,12 +102,12 @@ class SummaryMedan extends Model
                     }
                 }
             } else {
-                $awal = TransactionMedan::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $awal = TransactionLabuanbatu::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
                 foreach ($awal as $dt_awal) {
-                    $data_ = SummaryMedan::where('year',$tahun)->where('merchant.name',$dt_awal['merchant']['name'])->orderBy('merchant.name', 'asc')->get();
+                    $data_ = SummaryLabuanbatu::where('year',$tahun)->where('merchant.name',$dt_awal['merchant']['name'])->orderBy('merchant.name', 'asc')->get();
                     foreach ($data_ as $data) {
-                        $total = TransactionMedan::where('pmt',$keyword)->get();
-                        $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'])->where('pmt',$keyword)->take(1)->get();
+                        $total = TransactionLabuanbatu::where('pmt',$keyword)->get();
+                        $data2 = TransactionLabuanbatu::where('merchant.name',$data['merchant']['name'])->where('pmt',$keyword)->take(1)->get();
                         foreach ($data2 as $sub2) {
                             $start++;
                             $isi[] = [
@@ -150,23 +150,23 @@ class SummaryMedan extends Model
 
     public function trx($merchant, $year)
     {
-        return SummaryMedan::where('merchant._id',$merchant,true)->where('year',$year,true)->orderBy('merchant.name', 'asc')->get();
+        return SummaryLabuanbatu::where('merchant._id',$merchant,true)->where('year',$year,true)->orderBy('merchant.name', 'asc')->get();
     }
 
     public function getPerangkat_()
     {
-        return TransactionMedan::groupBy('pmt')->get(['pmt']);
+        return TransactionLabuanbatu::groupBy('pmt')->get(['pmt']);
     }
 
     public function EditMerchant($id, $keterangan, $tahun, $bulan, $status, $nama)
     {
         try {
-            SummaryMedan::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
-            SummaryMedan::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
-            MerchantMedan::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
-            TransactionMedan::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
-            TransactionMedan::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
-            SummaryMedan::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+            SummaryLabuanbatu::where('year',$tahun,true)->where('merchant._id',$id,true)->unset($bulan.'.'.'keterangan');
+            SummaryLabuanbatu::where('year',$tahun,true)->where('merchant._id',$id,true)->push($bulan.'.'.'keterangan',$keterangan);
+            MerchantLabuanbatu::where('_id',$id,true)->where('name',$nama,true)->update(['status' => $status]);
+            TransactionLabuanbatu::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
+            TransactionLabuanbatu::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['status' => $status]);
+            SummaryLabuanbatu::where('merchant._id',$id,true)->where('merchant.name',$nama,true)->update(['merchant.status' => $status]);
             return "Proses update sukses, Terima kasih!";
         } catch (\Throwable $th) {
             $pesan = $th->getMessage();
@@ -255,7 +255,7 @@ class SummaryMedan extends Model
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(20); // Set width kolom E
 
         if ($perangkat === "all") {
-            $data_ = SummaryMedan::where('year',$tahun,true)->where('merchant.status',1,true)->orderBy('merchant.name', 'asc')->get();
+            $data_ = SummaryLabuanbatu::where('year',$tahun,true)->where('merchant.status',1,true)->orderBy('merchant.name', 'asc')->get();
             foreach ($data_ as $data) {
                 count($data[$bulan]) <> "3" ? $keterangan = "-" : $keterangan = $data[$bulan]['keterangan'][0];
                 $sheet->setCellValue('A'.$start_awal, $no);
@@ -277,7 +277,7 @@ class SummaryMedan extends Model
                 $spreadsheet->getActiveSheet()->getStyle('C'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('C'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-                $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
+                $data2 = TransactionLabuanbatu::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
                 foreach ($data2 as $sub2) {
                     $sheet->setCellValue('D'.$start_awal, $sub2['pmt']);
                     $spreadsheet->getActiveSheet()->getStyle('D'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
@@ -301,11 +301,11 @@ class SummaryMedan extends Model
                 $start_awal = $start_awal + 1;
             }
         } else {
-            $data_ = SummaryMedan::where('year',$tahun,true)->where('merchant.status',1,true)->orderBy('merchant.name','asc')->get();
+            $data_ = SummaryLabuanbatu::where('year',$tahun,true)->where('merchant.status',1,true)->orderBy('merchant.name','asc')->get();
             foreach ($data_ as $data) {
                 count($data[$bulan]) <> "3" ? $keterangan = "-" : $keterangan = $data[$bulan]['keterangan'][0];
                 
-                $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'],true)->where('pmt',$perangkat)->take(1)->get();
+                $data2 = TransactionLabuanbatu::where('merchant.name',$data['merchant']['name'],true)->where('pmt',$perangkat)->take(1)->get();
                 foreach ($data2 as $sub2) {
                     if ($sub2['pmt'] === $perangkat) {
                         $sheet->setCellValue('A'.$start_awal, $no);
