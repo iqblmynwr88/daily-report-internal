@@ -18,7 +18,7 @@ class SummaryMedan extends Model
         $amt = 0;
         $tax = 0;
         $lembar = 0;
-        $detail = TransactionMedan::where('merchant._id',$id,true)->get();
+        $detail = TransactionMedan::where('merchant._id',$id,true)->take(1)->get();
         foreach ($detail as $trxDet) {
             $trx = DetailTrxMedan::where('idMerchant',$trxDet['merchant']['_id'])->whereRaw(['trxDate' => ['$gt' => $tanggal_awal, '$lt' => $tanggal_akhir],],true)->get();
             foreach ($trx as $res) {

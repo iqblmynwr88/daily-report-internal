@@ -284,7 +284,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12" id="form-edit-merchant">
                             <div class="mb-3">
-                                <label for="formGroupExampleInput" class="form-label">Total Lembar</label>
+                                <label for="formGroupExampleInput" class="form-label">Total Trx</label>
                                 <input type="text" class="form-control" id="total-lembar" readonly>
                             </div>
                             <div class="mb-3">
@@ -967,12 +967,15 @@
                         let hasil = result.split("|");
                         $("#ModalDetailTrxNotif").modal("hide");
                         $("#ModalDetailTrx").modal("show");
-                        console.log(result);
                         $("#total-lembar").val(hasil[0]+" Trx");
                         $("#total-amount").val("Rp "+number_format(hasil[1]));
                         $("#total-tax").val("Rp "+number_format(hasil[2]));
                     }
                 });
+            });
+
+            $( "#ModalDetailTrx" ).on('shown.bs.modal', function (e){
+                $("#ModalDetailTrxNotif").modal("hide");
             });
 
             function number_format (number, decimals, decPoint, thousandsSep) { 

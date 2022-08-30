@@ -682,6 +682,27 @@ class SummaryWilayah extends Controller
         if ($wilayah === "medan") {
             $isidata = new SummaryMedan;
             return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "batam") {
+            $isidata = new SummaryBatam;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "deliserdang") {
+            $isidata = new SummaryDeliserdang;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "karo") {
+            $isidata = new SummaryKaro;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "pematangsiantar") {
+            $isidata = new SummaryPematangsiantar;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "langkat") {
+            $isidata = new SummaryLangkat;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "labuanbatu") {
+            $isidata = new SummaryLabuanbatu;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        } elseif ($wilayah === "asahan") {
+            $isidata = new SummaryAsahan;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
         }
     }
     /**

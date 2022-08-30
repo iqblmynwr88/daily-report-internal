@@ -13,6 +13,23 @@ class SummaryKaro extends Model
     protected $connection = "dbkaro";
     protected $collection = "summaries";
 
+    public function DetailWilayah($id, $tanggal_awal, $tanggal_akhir)
+    {
+        $amt = 0;
+        $tax = 0;
+        $lembar = 0;
+        $detail = TransactionKaro::where('merchant._id',$id,true)->take(1)->get();
+        foreach ($detail as $trxDet) {
+            $trx = DetailTrxKaro::where('idMerchant',$trxDet['merchant']['_id'])->whereRaw(['trxDate' => ['$gt' => $tanggal_awal, '$lt' => $tanggal_akhir],],true)->get();
+            foreach ($trx as $res) {
+                $lembar++;
+                $amt += $res['trxAmount'];
+                $tax += $res['trxTax'];
+            }
+        }
+        return ($lembar."|".$amt."|".$tax);
+    }
+    
     public function merge($tahun, $bulan, $start, $length, $keyword)
     {
         try {
