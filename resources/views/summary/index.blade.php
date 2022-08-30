@@ -257,6 +257,55 @@
         </div>
     </div>
 
+    <div class="modal fade" id="ModalDetailTrxNotif" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="page-loader text-center" id="spinner-main">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden"></span>
+                        </div>
+                        <h5 class="text-success" id="exampleModalLabel">Mohon tunggu, data sedang di proses...</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ModalDetailTrx" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detail Transaksi</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12" id="form-edit-merchant">
+                            <div class="mb-3">
+                                <label for="formGroupExampleInput" class="form-label">Total Lembar</label>
+                                <input type="text" class="form-control" id="total-lembar" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="formGroupExampleInput" class="form-label">Total Amount</label>
+                                <input type="text" class="form-control" id="total-amount" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="formGroupExampleInput2" class="form-label">Total Tax</label>
+                                <input type="text" class="form-control" id="total-tax" readonly>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" id="btn-close-detail" data-bs-dismiss="modal"><i class="fa fa-sm fa-close"></i> Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @include('layout.main-footer')
     <!-- Page level plugins -->
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
@@ -880,19 +929,19 @@
                 let keterangan = "";
                 let status = "";
                 for (i = 0; i < 11; i++) {
-                    body1 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td></tr>";
+                    body1 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td><td><button class='btn btn-sm btn-secondary' id='btn-view-detail' data-bulan='"+d.bulan+"' data-tahun='"+d.tahun+"' data-id='"+d.id.$oid+"' data-tgl='"+d.summaries.data.values[i].day+"'><i class='fa fa-sm fa-circle-info text-warning'></i> <small>View</small></button></td></tr>";
                 }
                 for (i = 11; i < 22; i++) {
-                    body2 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td></tr>";
+                    body2 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td><td><button class='btn btn-sm btn-secondary' id='btn-view-detail' data-bulan='"+d.bulan+"' data-tahun='"+d.tahun+"' data-id='"+d.id.$oid+"' data-tgl='"+d.summaries.data.values[i].day+"'><i class='fa fa-sm fa-circle-info text-warning'></i> <small>View</small></button></td></tr>";
                 }
                 for (i = 22; i < total_hari2; i++) {
-                    body3 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td></tr>";
+                    body3 += "<tr><td><small>"+d.summaries.data.values[i].day+"</small></td><td><small>"+number_format(d.summaries.data.values[i].amt)+"</small></td><td><small>"+number_format(d.summaries.data.values[i].tax)+"</small></td><td><button class='btn btn-sm btn-secondary' id='btn-view-detail' data-bulan='"+d.bulan+"' data-tahun='"+d.tahun+"' data-id='"+d.id.$oid+"' data-tgl='"+d.summaries.data.values[i].day+"'><i class='fa fa-sm fa-circle-info text-warning'></i> <small>View</small></button></td></tr>";
                 }
                 keterangan = d.summaries.data.keterangan === undefined ? "-" : d.summaries.data.keterangan;
                 status = d.summaries.status == "1" ? "Aktif" : "Tidak Aktif";
                 // status = d.summaries.status;
                 body4 = "<tr><td><small>"+keterangan+"</small></td></tr><tr><td><small><b>Status</b></small></td></tr><tr><td><small>"+status+"</small></td></tr><tr><td><button class='btn btn-sm btn-outline-success' id='btn-edit-data' data-nama='"+d.name+"' data-alamat='"+d.address+"' data-status='"+d.summaries.status+"' data-keterangan='"+keterangan+"' data-kategori='"+d.tax_category+"' data-id='"+d.id.$oid+"'><i class='fa fa-edit'></i> Edit Data</button></td></tr>";
-                let oTable1 = "<div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tanggal</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th></tr><tbody>"+body1+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tanggal</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th></tr><tbody>"+body2+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tanggal</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th></tr><tbody>"+body3+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light'><tr><th><small><b>Keterangan</b></small></th></tr><tbody>"+body4+"</tbody></table></div>";
+                let oTable1 = "<div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tgl</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th><th><small><b>Detail</b></small></th></tr><tbody>"+body1+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tgl</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th><th><small><b>Detail</b></small></th></tr><tbody>"+body2+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light table-striped'><tr><th width='10%'><small><b>Tgl</b></small></th><th width='10%'><small><b>Amount</b></small></th><th><small><b>Tax</b></small></th><th><small><b>Detail</b></small></th></tr><tbody>"+body3+"</tbody></table></div><div class='col-lg-3 col-xl-3 col-md-3 col-sm-3'><table class='table table-light'><tr><th><small><b>Keterangan</b></small></th></tr><tbody>"+body4+"</tbody></table></div>";
                 let oTable = "<div class='row bg-light'>"+oTable1+"</div>";
                 return (oTable);
             }
@@ -906,7 +955,25 @@
                 $("#edit-keterangan-wajib-pajak").val($(this).attr("data-keterangan"));
                 $(this).attr("data-status") === "1" ? $("#edit-status-aktif-wajib-pajak").prop("checked","checked") : $("#edit-status-tidak-aktif-wajib-pajak").prop("checked","checked");
                 $("#ModalEditMerchant").modal("show");
-            })
+            });
+
+            $(document.body).delegate("#btn-view-detail","click",function(e) {
+                e.preventDefault();
+                let param = $(this).attr("data-id")+'|'+$(this).attr("data-tahun")+'|'+$(this).attr("data-bulan")+'|'+$(this).attr("data-tgl")+'|'+$("#wilayah").val();
+                $("#ModalDetailTrxNotif").modal("show");
+                $.ajax({
+                    url: "/GetDetailTrx/"+param,
+                    success: function(result) {
+                        let hasil = result.split("|");
+                        $("#ModalDetailTrxNotif").modal("hide");
+                        $("#ModalDetailTrx").modal("show");
+                        console.log(result);
+                        $("#total-lembar").val(hasil[0]+" Trx");
+                        $("#total-amount").val("Rp "+number_format(hasil[1]));
+                        $("#total-tax").val("Rp "+number_format(hasil[2]));
+                    }
+                });
+            });
 
             function number_format (number, decimals, decPoint, thousandsSep) { 
                 number = (number + '').replace(/[^0-9+\-Ee.]/g, '')

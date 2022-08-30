@@ -12,6 +12,23 @@ class SummaryMedan extends Model
 {
     protected $connection = "dbmedan";
     protected $collection = "summaries";
+
+    public function DetailWilayah($id, $tanggal_awal, $tanggal_akhir)
+    {
+        $amt = 0;
+        $tax = 0;
+        $lembar = 0;
+        $detail = TransactionMedan::where('merchant._id',$id,true)->get();
+        foreach ($detail as $trxDet) {
+            $trx = DetailTrxMedan::where('idMerchant',$trxDet['merchant']['_id'])->whereRaw(['trxDate' => ['$gt' => $tanggal_awal, '$lt' => $tanggal_akhir],],true)->get();
+            foreach ($trx as $res) {
+                $lembar++;
+                $amt += $res['trxAmount'];
+                $tax += $res['trxTax'];
+            }
+        }
+        return ($lembar."|".$amt."|".$tax);
+    }
     
     public function merge($tahun, $bulan, $start, $length, $keyword)
     {
@@ -24,7 +41,7 @@ class SummaryMedan extends Model
                 $data_ = SummaryMedan::where('year',$tahun,true)->where('merchant.name','like','%'.$keyword.'%')->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
             }
             foreach ($data_ as $data) {
-                $data2 = TransactionMedan::where('merchant.name',$data['merchant']['name'],true)->take(1)->get();
+                $data2 = TransactionMedan::where('merchant._id',$data['merchant']['_id'],true)->take(1)->get();
                 foreach ($data2 as $sub2) {
                     $start++;
                     $isi[] = [

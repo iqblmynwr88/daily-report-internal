@@ -663,6 +663,27 @@ class SummaryWilayah extends Controller
             return ($isidata->SimpanKeterangan($id, $keterangan, $tahun, $bulan, $status, $nama));
         }
     }
+
+    public function GetDetailTrx($slug)
+    {
+        // 6125b3b6860a83427c5f54b9|2022|August|1
+        $arr = explode("|", $slug);
+        $id = $arr[0];
+        $tahun = $arr[1];
+        $bulan = date("m", strtotime($arr[2]));
+        $tgl = $arr[3];
+        $wilayah = $arr[4];
+        
+        $date=date_create($tahun."-".$bulan."-".$tgl);
+        $tgl_awal = date_format($date,"Y-m-d");
+        $tanggal_awal = date('Y-m-d', strtotime($tgl_awal));
+        $tanggal_akhir = date('Y-m-d', strtotime("+1 day", strtotime($tgl_awal)));
+        
+        if ($wilayah === "medan") {
+            $isidata = new SummaryMedan;
+            return ($isidata->DetailWilayah($id, $tanggal_awal, $tanggal_akhir));
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *

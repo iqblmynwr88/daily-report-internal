@@ -35,6 +35,7 @@ Route::group(['prefix' => '/', 'middleware' => ['check.session']], function () {
     Route::get('/SearchByPmt/{slug}',[SummaryWilayah::class, 'SearchByPmt']);
     Route::get('/EditMerchant/{slug}',[SummaryWilayah::class, 'EditMerchant']);
     Route::get('/ExportToDoc/{slug}',[SummaryWilayah::class, 'ExportToDoc']);
+    Route::get('/GetDetailTrx/{slug}',[SummaryWilayah::class, 'GetDetailTrx']);
     
     // Get Data from REST API POB v4
     // =========================================================================================================================
