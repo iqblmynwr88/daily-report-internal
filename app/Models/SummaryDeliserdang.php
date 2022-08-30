@@ -120,11 +120,11 @@ class SummaryDeliserdang extends Model
                     }
                 }
             } else {
-                $awal = TransactionDeliserdang::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $awal = TransactionDeliserdang::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->groupBy('merchant')->skip($start)->take($length)->get();
                 foreach ($awal as $dt_awal) {
                     $data_ = SummaryDeliserdang::where('year',$tahun)->where('merchant.name',$dt_awal['merchant']['name'])->orderBy('merchant.name', 'asc')->get();
                     foreach ($data_ as $data) {
-                        $total = TransactionDeliserdang::where('pmt',$keyword)->get();
+                        $total = TransactionDeliserdang::where('pmt',$keyword)->groupBy('merchant')->get();
                         $data2 = TransactionDeliserdang::where('merchant.name',$data['merchant']['name'])->where('pmt',$keyword)->take(1)->get();
                         foreach ($data2 as $sub2) {
                             $start++;

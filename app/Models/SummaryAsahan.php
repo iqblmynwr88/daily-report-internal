@@ -119,11 +119,11 @@ class SummaryAsahan extends Model
                     }
                 }
             } else {
-                $awal = TransactionAsahan::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $awal = TransactionAsahan::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->groupBy('merchant')->skip($start)->take($length)->get();
                 foreach ($awal as $dt_awal) {
                     $data_ = SummaryAsahan::where('year',$tahun)->where('merchant.name',$dt_awal['merchant']['name'])->orderBy('merchant.name', 'asc')->get();
                     foreach ($data_ as $data) {
-                        $total = TransactionAsahan::where('pmt',$keyword)->get();
+                        $total = TransactionAsahan::where('pmt',$keyword)->groupBy('merchant')->get();
                         $data2 = TransactionAsahan::where('merchant.name',$data['merchant']['name'])->where('pmt',$keyword)->take(1)->get();
                         foreach ($data2 as $sub2) {
                             $start++;

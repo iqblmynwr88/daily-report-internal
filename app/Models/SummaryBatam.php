@@ -118,11 +118,11 @@ class SummaryBatam extends Model
                     }
                 }
             } else {
-                $awal = TransactionBatam::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->skip($start)->take($length)->get();
+                $awal = TransactionBatam::where('pmt',$keyword)->orderBy('merchant.name', 'asc')->groupBy('merchant')->skip($start)->take($length)->get();
                 foreach ($awal as $dt_awal) {
                     $data_ = SummaryBatam::where('year',$tahun)->where('merchant.name',$dt_awal['merchant']['name'])->orderBy('merchant.name', 'asc')->get();
                     foreach ($data_ as $data) {
-                        $total = TransactionBatam::where('pmt',$keyword)->get();
+                        $total = TransactionBatam::where('pmt',$keyword)->groupBy('merchant')->get();
                         $data2 = TransactionBatam::where('merchant.name',$data['merchant']['name'])->where('pmt',$keyword,true)->take(1)->get();
                         foreach ($data2 as $sub2) {
                             $start++;
