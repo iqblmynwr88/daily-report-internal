@@ -181,8 +181,6 @@ class ComunicationRestApiController extends Controller
             $username = session()->get('username');
             $jenisuser = session()->get('jenis_user');
             $wilayah = $slug;
-            // $tanggalawal = date("Y-m-d");
-            // $tanggalakhir = date("Y-m-t");
             if (is_null(request('search')['value'])) {
                 if (request('start') === "0") {
                     $page = 1;
@@ -214,7 +212,13 @@ class ComunicationRestApiController extends Controller
                         'error'           => $result->status(),
                     ]);
                 } else {
-                    $pesan = $result['desc'];
+                    return response([
+                        'draw'            => 0,
+                        'recordsTotal'    => 0,
+                        'recordsFiltered' => 0,
+                        'data'            => [],
+                        'error'           => $result['desc'],
+                    ]);
                 }
             } else {
                 // Dilakukan apabila input search tidak kosong, dan akan mengirimkan ke API

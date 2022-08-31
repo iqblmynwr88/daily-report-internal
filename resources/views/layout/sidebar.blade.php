@@ -69,6 +69,9 @@
             <a class="collapse-item {{ $slug == '/parsing/samosir' ? 'active' : '' }} {{ $SMS_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/samosir">Samosir</a>
             <a class="collapse-item {{ $slug == '/parsing/simalungun' ? 'active' : '' }} {{ $SML_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/simalungun">Simalungun</a>
             <a class="collapse-item {{ $slug == '/parsing/tanjungpinang' ? 'active' : '' }} {{ $TJP_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/tanjungpiang">Tanjungpinang</a>
+            <a class="collapse-item {{ $slug == '/parsing/langkat' ? 'active' : '' }} {{ $LGT_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/langkat">Langkat</a>
+            <a class="collapse-item {{ $slug == '/parsing/labuhanbatu' ? 'active' : '' }} {{ $LBB_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/labuhanbatu">Labuhanbatu</a>
+            <a class="collapse-item {{ $slug == '/parsing/asahan' ? 'active' : '' }} {{ $ASA_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/parsing/asahan">Asahan</a>
         </div>
     </div>
 </li>

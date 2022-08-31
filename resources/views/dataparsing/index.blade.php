@@ -182,6 +182,7 @@
     <script>
         $(document).ready(function() {
             let wilayah = '{{ $wilayah }}';
+            console.log(wilayah);
             $(".select2").select2();
             var tr;
             var row;
@@ -384,11 +385,26 @@
                 console.log(d.merchant_name);
                 // let x = "<table class='table' cellpadding='5' cellspacing='0' border='0' style='padding-left:50px;'>";
                     let body = "";
+                    let progress_bar = "";
                     $.each(d.data_perangkat, function(i_,val_) {
-                        console.log(d.merchant_name);
-                        body += "<tr><td><small>"+val_.devicename+"</small></td><td><small>"+val_.jenis_perangkat+"</small></td><td><small>"+val_.cek+"</small></td><td><small>"+val_.foldernew+"</small></td><td><small>"+val_.sent+"</small></td><td><small>"+val_.sent2+"</small></td><td><small>"+val_.keterangan+"</small></td><td><button class='btn btn-sm btn-danger' id='btn-tambah-keterangan' data-keterangan="+val_.keterangan+" data-device="+val_.devicename+" data-id="+val_.id+" data-merchantId="+d.merchant_id+" data-merchantName="+d.merchant_name.replaceAll(" ", "&#32")+" ><small><i class='fas fa-plus fa-sm'></i></small></button></td></tr>";
+                        let ct = val_.disk.split("%");
+                        console.log(ct[0]);
+                        if (val_.disk !== "") {
+                            if (ct[0] >= 40 && ct[0] <= 60) {
+                                progress_bar = "<div class='progress'><div class='progress-bar progress-bar-striped progress-bar-animated bg-warning text-dark' role='progressbar' aria-label='Example with label' style='width: "+val_.disk+";' aria-valuenow='"+ct[0]+"' aria-valuemin='0' aria-valuemax='100'><small>"+val_.disk+"</small></div></div>";
+                            } else if (ct[0] < 40) {
+                                progress_bar = "<div class='progress'><div class='progress-bar progress-bar-striped progress-bar-animated bg-primary' role='progressbar' aria-label='Example with label' style='width: "+val_.disk+";' aria-valuenow='"+ct[0]+"' aria-valuemin='0' aria-valuemax='100'><small>"+val_.disk+"</small></div></div>";
+                            } else if (ct[0] > 60) {
+                                progress_bar = "<div class='progress'><div class='progress-bar progress-bar-striped progress-bar-animated bg-danger' role='progressbar' aria-label='Example with label' style='width: "+val_.disk+";' aria-valuenow='"+ct[0]+"' aria-valuemin='0' aria-valuemax='100'><small>"+val_.disk+"</small></div></div>";
+                            } else {
+                                progress_bar = "<div class='progress'><div class='progress-bar progress-bar-striped progress-bar-animated bg-secondary' role='progressbar' aria-label='Example with label' style='width: 100%;' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'><small>0%</small></div></div>";
+                            }
+                        } else {
+                            progress_bar = "<div class='progress'><div class='progress-bar progress-bar-striped progress-bar-animated bg-secondary' role='progressbar' aria-label='Example with label' style='width: 100%;' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'><small>0%</small></div></div>";
+                        }
+                        body += "<tr><td><small>"+val_.devicename+"</small></td><td><small>"+val_.jenis_perangkat+"</small></td><td><small>"+val_.cek+"</small></td><td><small>"+val_.foldernew+"</small></td><td><small>"+val_.sent+"</small></td><td><small>"+val_.sent2+"</small></td><td><small>"+progress_bar+"</small></td><td><small>"+val_.memory+"</small></td><td><small>"+val_.keterangan+"</small></td><td><button class='btn btn-sm btn-danger' id='btn-tambah-keterangan' data-keterangan="+val_.keterangan+" data-device="+val_.devicename+" data-id="+val_.id+" data-merchantId="+d.merchant_id+" data-merchantName="+d.merchant_name.replaceAll(" ", "&#32")+" ><small><i class='fas fa-plus fa-sm'></i></small></button></td></tr>";
                     });
-                    let oTable = "<table class='table table-light'><tr><th width='10%'><small><b>Device</b></small></th><th width='10%'><small><b>Jenis Perangkat</b></small></th><th><small><b>Cek</b></small></th><th><small><b>Folder New</b></small></th><th><small><b>File</b></small></th><th><small><b>Sent</b></small></th><th width='30%'><small><b>Keterangan</b></small></th><th width='1%' class='text-center'><small><b>....</b></small></th></tr><tbody>"+body+"</tbody></table>";
+                    let oTable = "<table class='table table-light'><tr><th width='10%'><small><b>Device</b></small></th><th width='10%'><small><b>Jenis Perangkat</b></small></th><th><small><b>Cek</b></small></th><th><small><b>Folder New</b></small></th><th><small><b>File</b></small></th><th><small><b>Sent</b></small></th><th width='10%'><small><b>Disk</b></small></th><th width='10%'><small><b>Memory</b></small></th><th width='30%'><small><b>Keterangan</b></small></th><th width='1%' class='text-center'><small><b>....</b></small></th></tr><tbody>"+body+"</tbody></table>";
                     return (oTable);
             }
             
