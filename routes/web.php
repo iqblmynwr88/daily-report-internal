@@ -8,6 +8,7 @@ use App\Http\Controllers\SummaryMedanController;
 use App\Http\Controllers\SummaryPematangsiantarController;
 use App\Http\Controllers\SummaryReportController;
 use App\Http\Controllers\SummaryWilayah;
+use App\Http\Controllers\UtilityController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +41,11 @@ Route::group(['prefix' => '/', 'middleware' => ['check.session']], function () {
     // Get Data from REST API POB v4
     // =========================================================================================================================
     Route::get('/parsing/{slug}',[ComunicationRestApiController::class, 'index']);
+    // Route::get('/test', [UtilityController::class, 'index']);
+    
+    Route::get('/utility/doubledata', [UtilityController::class, 'index']);
+    Route::get('/CekDoubleData/{slug}', [UtilityController::class, 'CekDoubleData']);
+
     Route::get('/GetAllDataParsing/{wilayah}',[ComunicationRestApiController::class, 'GetAllDataParsing']);
     Route::get('/UpdateKeteranganMerchant/{slug}',[ComunicationRestApiController::class, 'UpdateKeteranganMerchant']);
 });

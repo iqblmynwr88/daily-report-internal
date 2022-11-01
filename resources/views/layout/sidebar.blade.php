@@ -10,7 +10,7 @@
 <hr class="sidebar-divider my-0">
 <!-- Nav Item - Dashboard -->
 <li class="nav-item {{ $main_menu == 'dashboard' ? 'active' : '' }}">
-    <a class="nav-link" href="/">
+    <a class="nav-link" href="/dashboard">
         <i class="fas fa-fw fa-tachometer-alt"></i>
         <span>Dashboard</span></a>
 </li>
@@ -75,7 +75,19 @@
         </div>
     </div>
 </li>
-
+<li class="nav-item {{ $main_menu == 'utility' ? 'active' : '' }}">
+    <a class="nav-link {{ $main_menu == 'utility' ? '' : 'collapsed' }}" href="#" data-toggle="collapse" data-target="#Menuutility"
+        aria-expanded="{{ $main_menu == 'utility' ? 'true' : 'false' }}" aria-controls="Menuutility">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Utility</span>
+    </a>
+    <div id="Menuutility" class="collapse {{ $main_menu == 'utility' ? 'show' : '' }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Tools App</h6>
+            <a class="collapse-item {{ $slug == '/utility/doubledata' ? 'active' : '' }} {{ $MDN_IS_ACTIVE == 1 ? '' : 'd-none' }}" href="/utility/doubledata">Check Double Data</a>
+        </div>
+    </div>
+</li>
 <!-- Divider -->
 <hr class="sidebar-divider d-none d-md-block">
 <!-- Sidebar Toggler (Sidebar) -->

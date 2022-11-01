@@ -13,6 +13,18 @@ class SummaryBatam extends Model
     protected $connection = "dbbatam";
     protected $collection = "summaries";
 
+    public function GetDoubleData()
+    {
+        $trxId = "";
+        $lembar = 0;
+        $trx = DetailTrxBatam::distinct('trxId')->whereRaw(['trxDate' => ['$gt' => "2022-08-01", '$lt' => "2022-08-02"],],true)->groupBy(['trxId','trxDate'])->get(['trxId', 'trxDate']);
+        foreach ($trx as $res) {
+            $lembar++;
+            // $trxId += $res['trxId'];
+        }
+        return $lembar;
+    }
+
     public function DetailWilayah($id, $tanggal_awal, $tanggal_akhir)
     {
         $amt = 0;
