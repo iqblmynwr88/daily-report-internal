@@ -198,6 +198,8 @@ class SummaryLangkat extends Model
         $sheet = $spreadsheet->getActiveSheet();
         $no = 1;
         $start_awal = 6;
+        $total_amount = 0;
+        $total_tax = 0;
 
         $sheet->setCellValue('A1', 'REPORT WILAYAH '.strtoupper($wilayah));
         $spreadsheet->getActiveSheet()->mergeCells('A1:F1');
@@ -218,8 +220,9 @@ class SummaryLangkat extends Model
         $sheet->setCellValue('B5', 'Merchant');
         $sheet->setCellValue('C5', 'Tax Category');
         $sheet->setCellValue('D5', 'Perangkat');
-        $sheet->setCellValue('E5', 'Keterangan');
-        $sheet->setCellValue('F5', 'Total Amount');
+        $sheet->setCellValue('E5', 'Total Amount');
+        $sheet->setCellValue('F5', 'Total Tax');
+        $sheet->setCellValue('G5', 'Keterangan');
 
         $spreadsheet->getActiveSheet()->getStyle('A5')->getFont()->setBold(TRUE); // Set bold kolom A5
         $spreadsheet->getActiveSheet()->getStyle('A5')->getFont()->setSize(12); // Set font size 55 untuk kolom A5
@@ -264,12 +267,20 @@ class SummaryLangkat extends Model
         $spreadsheet->getActiveSheet()->getStyle('F5')->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         $spreadsheet->getActiveSheet()->getStyle('F5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
+        $spreadsheet->getActiveSheet()->getStyle('G5')->getFont()->setBold(TRUE); // Set bold kolom A5
+        $spreadsheet->getActiveSheet()->getStyle('G5')->getFont()->setSize(12); // Set font size 55 untuk kolom A5
+        $spreadsheet->getActiveSheet()->getStyle('G5')->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('G5')->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('G5')->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('G5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
         $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(5); // Set width kolom A
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(40); // Set width kolom B
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(20); // Set width kolom C
         $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(25); // Set width kolom D
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(60); // Set width kolom E
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(20); // Set width kolom E
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(20); // Set width kolom E
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(90); // Set width kolom E
 
         if ($perangkat === "all") {
             $data_ = SummaryLangkat::where('year',$tahun,true)->where('merchant.status',1,true)->orderBy('merchant.name', 'asc')->get();
@@ -302,18 +313,37 @@ class SummaryLangkat extends Model
                     $spreadsheet->getActiveSheet()->getStyle('D'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                     $spreadsheet->getActiveSheet()->getStyle('D'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 }
-                $sheet->setCellValue('E'.$start_awal, $keterangan);
+                
+                // Get Tax from detail summary
+                foreach ($data[$bulan]['values'] as $detail) {
+                    $total_amount = $total_amount + $detail['amt'];
+                    $total_tax = $total_tax + $detail['tax'];
+                }
+                $sheet->setCellValue('E'.$start_awal, $total_amount);
                 $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-                $sheet->setCellValue('F'.$start_awal, "Rp ".number_format($data[$bulan]['total']));
+                $sheet->setCellValue('F'.$start_awal, $total_tax);
+                $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+                $sheet->setCellValue('G'.$start_awal, $keterangan);
                 $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                 $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                
+
+                $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+                $total_amount = 0;
+                $total_tax = 0;
                 $no = $no + 1;
                 $start_awal = $start_awal + 1;
             }
@@ -350,18 +380,36 @@ class SummaryLangkat extends Model
                         $spreadsheet->getActiveSheet()->getStyle('D'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('D'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
     
-                        $sheet->setCellValue('E'.$start_awal, $keterangan);
+                        // Get Tax from detail summary
+                        foreach ($data[$bulan]['values'] as $detail) {
+                            $total_amount = $total_amount + $detail['amt'];
+                            $total_tax = $total_tax + $detail['tax'];
+                        }
+                        $sheet->setCellValue('E'.$start_awal, $total_amount);
                         $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-    
-                        $sheet->setCellValue('F'.$start_awal, "Rp ".number_format($data[$bulan]['total']));
+
+                        $sheet->setCellValue('F'.$start_awal, $total_tax);
+                        $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        $spreadsheet->getActiveSheet()->getStyle('E'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+                        $sheet->setCellValue('G'.$start_awal, $keterangan);
                         $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         $spreadsheet->getActiveSheet()->getStyle('F'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         
+                        $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        $spreadsheet->getActiveSheet()->getStyle('G'.$start_awal)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                        
+                        $total_amount = 0;
+                        $total_tax = 0;
                         $no = $no + 1;
                         $start_awal = $start_awal + 1;
                     }

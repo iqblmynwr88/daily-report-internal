@@ -328,7 +328,7 @@ class SummaryWilayah extends Controller
                 }
             } elseif ($wilayah === "batam") {
                 $isidata = new SummaryBatam;
-                dd($isidata->GetDoubleData());
+                // dd($isidata->GetDoubleData());
                 if (count($t_search) === 4) {
                     $data = $isidata->GetDataByPmt($year, $month, $start, $length, $keyword);
                 } else {
